@@ -3,18 +3,20 @@
 
 #include QMK_KEYBOARD_H
 
-// TODO: Make LT macro for all layers, so INS and PDOT can still trigger media controls
+#define Y(kc) LALT_T(kc)
+#define U(kc) LCTL_T(kc)
+#define I(kc) LSFT_T(kc)
+#define O(kc) LGUI_T(kc)
+#define H(kc) RGUI_T(kc)
+#define J(kc) RSFT_T(kc)
+#define K(kc) RCTL_T(kc)
+#define L(kc) RALT_T(kc)
 
-// Home row mod parameters
-#define HRM_ROW       1
-#define HRM_LALT_COL  2
-#define HRM_LCTL_COL  3
-#define HRM_LSFT_COL  4
-#define HRM_LGUI_COL  5
-#define HRM_RGUI_COL  6
-#define HRM_RSFT_COL  7
-#define HRM_RCTL_COL  8
-#define HRM_RALT_COL  9
+// TODO: Make LT macro for all layers, so INS and PDOT can still trigger media controls
+// TODO: Consider moving merging the symbol and numpad layers into one and using the 3,6 key to toggle it
+//        0 would need to move to the semicolon (where it is on the symbol layer, currently, but maybe not with single tap vs double?)
+//        Otherwise, that space mod could be for the symbol layer itself
+// TODO: SHML + SHMR = Shift Lock
 
 // Custom Keys
 enum user_keycodes {
@@ -63,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
       KC_TAB,    KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,   KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,  KC_LBRC,KC_RBRC,  KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-         LNAV,     KC_A,   KC_S,   KC_D,   KC_F,   KC_G,   KC_H,   KC_J,   KC_K,   KC_L,  KC_SCLN,KC_QUOT,      KC_ENT,
+         LNAV,      KC_A, Y(KC_S),U(KC_D),I(KC_F),O(KC_G),H(KC_H),J(KC_J),K(KC_K),L(KC_L),KC_SCLN,KC_QUOT,      KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_LSFT,     KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,  KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
@@ -85,15 +87,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   // Numpad layer - Puts a numpad on the RHS of the keyboard
+  // TODO: Add a tap dance for the desired math symbol on the numpad (=, +, -, *, /) on H
   [LAYER_NUMPAD]      = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_P7,  KC_P8,  KC_P9,  KC_NO,  KC_NO,  KC_NO,   KC_BSPC,
+      KC_TRNS,   KC_NO,  KC_F1,  KC_F4,  KC_F7,  KC_F10, KC_GRV, KC_7,   KC_8,   KC_9,  KC_EQL,  KC_NO,  KC_NO,   KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-        KC_NO,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_P4,  KC_P5,  KC_P6,  KC_NO,  KC_NO,       KC_ENT,
+        KC_NO,     KC_NO,  KC_F2,  KC_F5,  KC_F8,  KC_F11,KC_PDOT, KC_4,   KC_5,   KC_6,   KC_0,   KC_NO,       KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_P1,  KC_P2,  KC_P3,  KC_NO,  KC_NO,  KC_UP,  KC_DEL,
+        KC_TRNS,     KC_NO,  KC_F3,  KC_F6,  KC_F9,  KC_F12,KC_PSLS, KC_1,   KC_2,   KC_3,  KC_MINS, KC_NO,  KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS,KC_TRNS, KC_NO,       KC_TRNS,        KC_TRNS,         KC_P0,        KC_PDOT,   KC_LEFT,KC_DOWN,KC_RGHT
+    KC_TRNS,KC_TRNS,KC_TRNS, KC_NO,       KC_TRNS,        KC_TRNS,         KC_0,        KC_PDOT,   KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -139,6 +142,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
+#define DEFAULT_TAPPING_TERM 10
+
+// Custom state variables
+static bool     shiftLock     = false;
+static bool     HRMModEnable  = false;
+static uint16_t tappingTerm   = DEFAULT_TAPPING_TERM;
+
 // Set layer status LED
 layer_state_t layer_state_set_user(layer_state_t state) {
   if(get_highest_layer(state)) {
@@ -150,10 +160,18 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+// Define the tapping term
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case QK_MOD_TAP ... QK_MOD_TAP_MAX:
+      return tappingTerm;
+
+    default:
+      return TAPPING_TERM;
+  }
+}
+
 // Implement custom keycode functions
-static bool shiftLock     = false;
-static bool HRMLModEnable = false;
-static bool HRMRModEnable = false;
 
 // bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
 //   return true;
@@ -162,13 +180,28 @@ static bool HRMRModEnable = false;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Process regular keycodes
   switch(keycode) {
+  case QK_MOD_TAP ... QK_MOD_TAP_MAX:
+    if(!HRMModEnable) {
+      if(record->event.pressed) {
+        register_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
+      } else {
+        unregister_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
+      }
+
+      return false;
+    }
+
+    break;
+
   case SHML:
     if(record->tap.count && record->event.pressed) {
       tap_code(KC_SPC);
     } else if(record->event.pressed) {
-      HRMLModEnable = true;
+      HRMModEnable  = true;
+      tappingTerm   = 200;
     } else {
-      HRMLModEnable = false;
+      HRMModEnable  = false;
+      tappingTerm   = DEFAULT_TAPPING_TERM;
       clear_mods();
     }
 
@@ -178,9 +211,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if(record->tap.count && record->event.pressed) {
       tap_code(KC_SPC);
     } else if(record->event.pressed) {
-      HRMRModEnable = true;
+      HRMModEnable  = true;
+      tappingTerm   = 200;
     } else {
-      HRMRModEnable = false;
+      HRMModEnable  = false;
+      tappingTerm   = DEFAULT_TAPPING_TERM;
       clear_mods();
     }
 
@@ -213,99 +248,36 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
     return false;
-  }
 
-  // Home Row Mods - Enables home row mods using a held mod enable key
-  if(!record->tap.count && record->event.key.row == HRM_ROW) {
-    if(HRMLModEnable) {
-      // Left Alt
-      if(record->event.key.col == HRM_LALT_COL) {
-        if(record->event.pressed) {
-          register_code(KC_LALT);
-        } else {
-          unregister_code(KC_LALT);
-        }
-
-        return false;
-      }
-
-      // Left GUI (Super)
-      if(record->event.key.col == HRM_LGUI_COL) {
-        if(record->event.pressed) {
-          register_code(KC_LGUI);
-        } else {
-          unregister_code(KC_LGUI);
-        }
-
-        return false;
-      }
-
-      // Left Control
-      if(record->event.key.col == HRM_LCTL_COL) {
-        if(record->event.pressed) {
-          register_code(KC_LCTL);
-        } else {
-          unregister_code(KC_LCTL);
-        }
-
-        return false;
-      }
-
-      // Left Shift
-      if(record->event.key.col == HRM_LSFT_COL) {
-        if(record->event.pressed) {
-          register_code(KC_LSFT);
-        } else {
-          unregister_code(KC_LSFT);
-        }
-
-        return false;
-      }
-    } else if(HRMRModEnable) {
-      // Right Shift
-      if(record->event.key.col == HRM_RSFT_COL) {
-        if(record->event.pressed) {
-          register_code(KC_RSFT);
-        } else {
-          unregister_code(KC_RSFT);
-        }
-
-        return false;
-      }
-
-      // Right Control
-      if(record->event.key.col == HRM_RCTL_COL) {
-        if(record->event.pressed) {
-          register_code(KC_RCTL);
-        } else {
-          unregister_code(KC_RCTL);
-        }
-
-        return false;
-      }
-
-      // Right GUI (Super)
-      if(record->event.key.col == HRM_RGUI_COL) {
-        if(record->event.pressed) {
-          register_code(KC_RGUI);
-        } else {
-          unregister_code(KC_RGUI);
-        }
-
-        return false;
-      }
-
-      // Right Alt
-      if(record->event.key.col == HRM_RALT_COL) {
-        if(record->event.pressed) {
-          register_code(KC_RALT);
-        } else {
-          unregister_code(KC_RALT);
-        }
-
-        return false;
-      }
+  case MICM:
+    if(record->event.pressed) {
+      register_code(KC_LSFT);
+    } else {
+      register_code(KC_MUTE);
+      unregister_code(KC_MUTE);
+      unregister_code(KC_LSFT);
     }
+    return false;
+
+  case MICU:
+    if(record->event.pressed) {
+      register_code(KC_LSFT);
+    } else {
+      register_code(KC_VOLU);
+      unregister_code(KC_MUTE);
+      unregister_code(KC_LSFT);
+    }
+    return false;
+
+  case MICD:
+    if(record->event.pressed) {
+      register_code(KC_LSFT);
+    } else {
+      register_code(KC_VOLD);
+      unregister_code(KC_MUTE);
+      unregister_code(KC_LSFT);
+    }
+    return false;
   }
 
   return true;
