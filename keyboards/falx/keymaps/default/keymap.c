@@ -3,36 +3,28 @@
 
 #include QMK_KEYBOARD_H
 
-#define Y(kc) LALT_T(kc)
-#define U(kc) LCTL_T(kc)
-#define I(kc) LSFT_T(kc)
-#define O(kc) LGUI_T(kc)
-#define H(kc) RGUI_T(kc)
-#define J(kc) RSFT_T(kc)
-#define K(kc) RCTL_T(kc)
-#define L(kc) RALT_T(kc)
-
 // TODO: Make LT macro for all layers, so INS and PDOT can still trigger media controls
-// TODO: Consider moving merging the symbol and numpad layers into one and using the 3,6 key to toggle it
-//        0 would need to move to the semicolon (where it is on the symbol layer, currently, but maybe not with single tap vs double?)
-//        Otherwise, that space mod could be for the symbol layer itself
-// TODO: SHML + SHMR = Shift Lock
+// TODO: Tap dance for the numpad for zero or space on a single press
+// TODO: Combo SHML + SHMR = Shift Lock
+// TODO: Caps Word implementation, maybe on (3,3) with shift lock on the same key with numpad layer?
+// TODO: Separate left and right HRM since it disrupts press and hold on nav layer arrow keys when using HRM for a modifier
 
 // Custom Keys
 enum user_keycodes {
-  HRML = SAFE_RANGE,  // Home row mods - left
-  HRMR,               // Home row mods - right
-  SFLK,               // Shift lock
-  TLCK,               // Tap terminal, hold lock, TODO: chord CTRL
-  EDEF,               // Tap file explorer, hold LAYER_DEFAULT
+  UK_SFLK = SAFE_RANGE, // Shift lock
+  UK_TLCK,              // Tap terminal, hold lock, TODO: chord CTRL
+  UK_EDEF,              // Tap file explorer, hold LAYER_DEFAULT
+  UK_FTAB,              // Tab forward
+  UK_ROTL,              // Rotate left (CCW)
+  UK_FLOT,              // Toggle floating
+  UK_ROTR               // Rotate right (CW)
 };
 
 // Layers
 #define LAYER_DEFAULT     0
-#define LAYER_SYMBOLS     1
-#define LAYER_NUMPAD      2
-#define LAYER_NAVIGATION  3
-#define LAYER_MEDIA       4
+#define LAYER_NUMPAD      1
+#define LAYER_NAVIGATION  2
+#define LAYER_MEDIA       3
 
 // Keymap
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -54,69 +46,75 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   #define LSYM  TT(LAYER_SYMBOLS)
   #define LNUM  TT(LAYER_NUMPAD)
   #define LNAV  TT(LAYER_NAVIGATION)
-  #define LMED  LT(LAYER_MEDIA, KC_SPC)
-  #define SHML  LT(0, HRML)
-  #define SHMR  LT(0, HRMR)
-  #define THTL  LT(0, TLCK)
-  #define THED  LT(0, EDEF)
+  #define LMED  LT(LAYER_MEDIA, KC_ESC)
+  #define THTL  LT(0, UK_TLCK)
+  #define THED  LT(0, UK_EDEF)
+  #define HRAS  LALT_T(KC_S)
+  #define HRCD  LCTL_T(KC_D)
+  #define HRSF  LSFT_T(KC_F)
+  #define HRGG  LGUI_T(KC_G)
+  #define HRGH  RGUI_T(KC_H)
+  #define HRSJ  RSFT_T(KC_J)
+  #define HRCK  RCTL_T(KC_K)
+  #define HRAL  RALT_T(KC_L)
 
   // Default layer - Basis for regular typing
-  [LAYER_DEFAULT]     = LAYOUT(
+  [LAYER_DEFAULT] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
       KC_TAB,    KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,   KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,  KC_LBRC,KC_RBRC,  KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-         LNAV,      KC_A, Y(KC_S),U(KC_D),I(KC_F),O(KC_G),H(KC_H),J(KC_J),K(KC_K),L(KC_L),KC_SCLN,KC_QUOT,      KC_ENT,
+         LNAV,      KC_A,   HRAS,  HRCD,   HRSF,   HRGG,   HRGH,   HRSJ,   HRCK,   HRAL,  KC_SCLN,KC_QUOT,      KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_LSFT,     KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,  KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-     THTL,   THED,   LNUM,    LSYM,         SHML,           SHMR,           LMED,         KC_ESC,   KC_LEFT,KC_DOWN,KC_RGHT
+     THTL,   THED,   KC_NO,   KC_NO,   LT(0, KC_SPC),  LT(0, KC_SPC),      LNUM,           LMED,    KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
-  // Symbol layer - Adds the number and F-key rows
-  [LAYER_SYMBOLS]     = LAYOUT(
-// ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,   KC_F1,  KC_F2,  KC_F3,  KC_F4,  KC_F5,  KC_F6,  KC_F7,  KC_F8,  KC_F9,  KC_F10, KC_F11, KC_F12,  KC_BSPC,
-// ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-        KC_GRV,    KC_1,   KC_2,   KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,   KC_9,   KC_0,  KC_MINS,      KC_EQL,
-// ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_UP,  KC_DEL,
-// ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, SFLK,   KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,        KC_INS,   KC_LEFT,KC_DOWN,KC_RGHT
-// ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
-  ),
+  #define HRAF5   LALT_T(KC_F5)
+  #define HRCF8   LCTL_T(KC_F8)
+  #define HRSF11  LSFT_T(KC_F11)
+  #define HRGNO   LGUI_T(KC_NO)
+  #define HRGGRV  RGUI_T(KC_GRV)
+  #define HRS4    RSFT_T(KC_4)
+  #define HRC5    RCTL_T(KC_5)
+  #define HRA6    RALT_T(KC_6)
 
   // Numpad layer - Puts a numpad on the RHS of the keyboard
-  // TODO: Add a tap dance for the desired math symbol on the numpad (=, +, -, *, /) on H
-  [LAYER_NUMPAD]      = LAYOUT(
+  [LAYER_NUMPAD] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,   KC_NO,  KC_F1,  KC_F4,  KC_F7,  KC_F10, KC_GRV, KC_7,   KC_8,   KC_9,  KC_EQL,  KC_NO,  KC_NO,   KC_BSPC,
+      KC_TRNS,   KC_F1,  KC_F4,  KC_F7,  KC_F10, KC_NO, KC_PAST, KC_7,   KC_8,   KC_9,  KC_PPLS, KC_NO,  KC_NO,   KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-        KC_NO,     KC_NO,  KC_F2,  KC_F5,  KC_F8,  KC_F11,KC_PDOT, KC_4,   KC_5,   KC_6,   KC_0,   KC_NO,       KC_ENT,
+       KC_TRNS,    KC_F2,  HRAF5,  HRCF8, HRSF11,  HRGNO, HRGGRV,  HRS4,   HRC5,   HRA6,  KC_MINS, KC_0,        KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     KC_NO,  KC_F3,  KC_F6,  KC_F9,  KC_F12,KC_PSLS, KC_1,   KC_2,   KC_3,  KC_MINS, KC_NO,  KC_UP,  KC_DEL,
+        KC_TRNS,     KC_F3,  KC_F6,  KC_F9,  KC_F12, KC_NO,  KC_EQL, KC_1,   KC_2,   KC_3,  KC_SLSH, KC_NO,  KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS,KC_TRNS, KC_NO,       KC_TRNS,        KC_TRNS,         KC_0,        KC_PDOT,   KC_LEFT,KC_DOWN,KC_RGHT
+    KC_TRNS,KC_TRNS,UK_SFLK, KC_INS,      KC_TRNS,        KC_TRNS,       KC_TRNS,        KC_PDOT,   KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
-  #define FCON  G(KC_TAB)
-  #define RCON  G(S(KC_TAB))
-  #define FTAB  C(KC_TAB)
-  #define RTAB  C(S(KC_TAB))
-  #define FLOT  S(KC_F1)
-  #define ROTL  S(KC_F2)
-  #define ROTR  S(KC_F3)
-  #define DIST  S(KC_F4)
-  #define SRNK  S(KC_F5)
-  #define GROW  S(KC_F6)
+  #define RCON    G(S(KC_TAB))
+  #define FCON    G(KC_TAB)
+  #define RTAB    C(S(KC_TAB))
+  #define SRNK    S(KC_F5)
+  #define DIST    S(KC_F4)
+  #define GROW    S(KC_F6)
+  #define HRAFTAB LALT_T(UK_FTAB)
+  #define HRCROTL LCTL_T(UK_ROTL)
+  #define HRSFLOT LSFT_T(UK_FLOT)
+  #define HRGROTR LGUI_T(UK_ROTR)
+  #define HRGHOME RGUI_T(KC_HOME)
+  #define HRSLEFT RSFT_T(KC_LEFT)
+  #define HRCDOWN RCTL_T(KC_DOWN)
+  #define HRARGHT RALT_T(KC_RGHT)
 
   // Navigation layer - Used for navigating text, tabs, windows, and workspaces, along with some QOL shortcuts
-  [LAYER_NAVIGATION]  = LAYOUT(
+  //
+  [LAYER_NAVIGATION] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
       KC_TRNS,   RCON,   FCON,   SRNK,   DIST,   GROW,   KC_NO, KC_PGUP, KC_UP, KC_PGDN, KC_NO,  KC_NO,  KC_NO,  KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,    RTAB,   FTAB,   ROTL,   FLOT,   ROTR,  KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT, KC_END, KC_NO,       KC_ENT,
+       KC_TRNS,    RTAB,  HRAFTAB,HRCROTL,HRSFLOT,HRGROTR,HRGHOME,HRSLEFT,HRCDOWN,HRARGHT, KC_END, KC_NO,       KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_TRNS,    C(KC_Z),C(KC_X),C(KC_C),C(KC_V),C(KC_Y), KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_PGUP, KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
@@ -124,30 +122,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
-  #define MICM  S(KC_MUTE)
-  #define MICU  S(KC_VOLU)
-  #define MICD  S(KC_VOLD)
+  #define MIKM S(KC_MUTE)
+  #define MIKU S(KC_VOLU)
+  #define MIKD S(KC_VOLD)
 
   // Media layer - Primarily volume and track actions
-  [LAYER_MEDIA]       = LAYOUT(
+  [LAYER_MEDIA] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
        KC_NO,    KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_MPLY,KC_MPRV,KC_MNXT,   KC_NO,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-         KC_NO,    KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,      KC_PSCR,
+         KC_NO,    KC_NO, KC_LALT,KC_LCTL,KC_LSFT,KC_LGUI, KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,      KC_PSCR,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_VOLD,KC_VOLU,KC_MUTE, MICM,   MICU,   KC_NO,
+        KC_TRNS,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_MUTE, MIKM,  KC_VOLU, KC_NO,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, KC_NO,  KC_NO,       KC_TRNS,        KC_TRNS,        KC_TRNS,        KC_NO,    KC_BRID, MICD,  KC_BRIU
+    KC_TRNS,KC_TRNS, KC_NO,   KC_NO,      KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,    MIKD,  KC_VOLD, MIKU
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   )
 };
 
-#define DEFAULT_TAPPING_TERM 10
-
 // Custom state variables
-static bool     shiftLock     = false;
-static bool     HRMModEnable  = false;
-static uint16_t tappingTerm   = DEFAULT_TAPPING_TERM;
+static bool shiftLock     = false;
+static bool HRMModEnable  = false;
 
 // Set layer status LED
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -160,11 +155,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+#define MIN_TAPPING_TERM 5
+
 // Define the tapping term
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case QK_MOD_TAP ... QK_MOD_TAP_MAX:
-      return tappingTerm;
+      return HRMModEnable ? TAPPING_TERM : MIN_TAPPING_TERM;
 
     default:
       return TAPPING_TERM;
@@ -177,108 +174,130 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 //   return true;
 // }
 
+#define FTAB C(KC_TAB)
+#define ROTL S(KC_F2)
+#define FLOT S(KC_F1)
+#define ROTR S(KC_F3)
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Process regular keycodes
   switch(keycode) {
-  case QK_MOD_TAP ... QK_MOD_TAP_MAX:
-    if(!HRMModEnable) {
-      if(record->event.pressed) {
-        register_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
+    case QK_MOD_TAP ... QK_MOD_TAP_MAX:
+      switch(keycode) {
+        case HRAFTAB:
+          if((!HRMModEnable || record->tap.count) && record->event.pressed) {
+            tap_code16(FTAB);
+            return false;
+          }
+
+          break;
+
+        case HRCROTL:
+          if((!HRMModEnable || record->tap.count) && record->event.pressed) {
+            tap_code16(ROTL);
+            return false;
+          }
+
+          break;
+
+        case HRSFLOT:
+          if((!HRMModEnable || record->tap.count) && record->event.pressed) {
+            tap_code16(FLOT);
+            return false;
+          }
+
+          break;
+
+        case HRGROTR:
+          if((!HRMModEnable || record->tap.count) && record->event.pressed) {
+            tap_code16(ROTR);
+            return false;
+          }
+
+          break;
+
+        default:
+          if((!HRMModEnable || record->tap.count) && record->event.pressed) {
+            register_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
+            return false;
+          } else if(!record->event.pressed) {
+            unregister_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
+          }
+
+          break;
+      }
+
+      break;
+
+    case LT(0, KC_SPC):
+      if(record->tap.count && record->event.pressed) {
+        tap_code(KC_SPC);
+      } else if(record->event.pressed) {
+        HRMModEnable = true;
       } else {
-        unregister_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
+        HRMModEnable = false;
       }
 
       return false;
+
+    case THTL:
+      if(record->tap.count && record->event.pressed) {
+        tap_code16(G(KC_SPC));
+      } else if(record->event.pressed) {
+        tap_code16(G(KC_L));
+      }
+
+      return false;
+
+    case THED:
+      if(record->tap.count && record->event.pressed) {
+        tap_code16(G(KC_E));
+      } else if(record->event.pressed) {
+        layer_clear();
+      }
+
+      return false;
+
+    case UK_SFLK:
+      if(record->event.pressed) shiftLock = !shiftLock;
+      if(shiftLock) {
+        register_code(KC_LSFT);
+      } else {
+        unregister_code(KC_LSFT);
+      }
+
+      return false;
+
+    case MIKM:
+      if(record->event.pressed) {
+        register_code(KC_LSFT);
+      } else {
+        register_code(KC_MUTE);
+        unregister_code(KC_MUTE);
+        unregister_code(KC_LSFT);
+      }
+      return false;
+
+    case MIKU:
+      if(record->event.pressed) {
+        register_code(KC_LSFT);
+      } else {
+        register_code(KC_VOLU);
+        unregister_code(KC_VOLU);
+        unregister_code(KC_LSFT);
+      }
+      return false;
+
+    case MIKD:
+      if(record->event.pressed) {
+        register_code(KC_LSFT);
+      } else {
+        register_code(KC_VOLD);
+        unregister_code(KC_VOLD);
+        unregister_code(KC_LSFT);
+      }
+      return false;
     }
-
-    break;
-
-  case SHML:
-    if(record->tap.count && record->event.pressed) {
-      tap_code(KC_SPC);
-    } else if(record->event.pressed) {
-      HRMModEnable  = true;
-      tappingTerm   = 200;
-    } else {
-      HRMModEnable  = false;
-      tappingTerm   = DEFAULT_TAPPING_TERM;
-      clear_mods();
-    }
-
-    return false;
-
-  case SHMR:
-    if(record->tap.count && record->event.pressed) {
-      tap_code(KC_SPC);
-    } else if(record->event.pressed) {
-      HRMModEnable  = true;
-      tappingTerm   = 200;
-    } else {
-      HRMModEnable  = false;
-      tappingTerm   = DEFAULT_TAPPING_TERM;
-      clear_mods();
-    }
-
-    return false;
-
-  case THTL:
-    if(record->tap.count && record->event.pressed) {
-      tap_code16(G(KC_SPC));
-    } else if(record->event.pressed) {
-      tap_code16(G(KC_L));
-    }
-
-    return false;
-
-  case THED:
-    if(record->tap.count && record->event.pressed) {
-      tap_code16(G(KC_E));
-    } else if(record->event.pressed) {
-      layer_clear();
-    }
-
-    return false;
-
-  case SFLK:
-    if(record->event.pressed) shiftLock = !shiftLock;
-    if(shiftLock) {
-      register_code(KC_LSFT);
-    } else {
-      unregister_code(KC_LSFT);
-    }
-
-    return false;
-
-  case MICM:
-    if(record->event.pressed) {
-      register_code(KC_LSFT);
-    } else {
-      register_code(KC_MUTE);
-      unregister_code(KC_MUTE);
-      unregister_code(KC_LSFT);
-    }
-    return false;
-
-  case MICU:
-    if(record->event.pressed) {
-      register_code(KC_LSFT);
-    } else {
-      register_code(KC_VOLU);
-      unregister_code(KC_MUTE);
-      unregister_code(KC_LSFT);
-    }
-    return false;
-
-  case MICD:
-    if(record->event.pressed) {
-      register_code(KC_LSFT);
-    } else {
-      register_code(KC_VOLD);
-      unregister_code(KC_MUTE);
-      unregister_code(KC_LSFT);
-    }
-    return false;
-  }
 
   return true;
 }
