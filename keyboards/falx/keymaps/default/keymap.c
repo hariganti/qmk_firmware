@@ -9,8 +9,8 @@
 // Custom Keys
 enum user_keycodes {
   SFLK = SAFE_RANGE,  // Shift lock
-  TLCK,               // Tap terminal, hold lock, TODO: chord CTRL
-  EDEF,               // Tap file explorer, hold LAYER_DEFAULT
+  TLCK,               // Tap: GUI + Space | Hold: Control | Release: GUI + L
+  EDEF,               // Tap: GUI + E     | Hold: Reset KB
   SPCL,               // Left space
   SPCR                // Right space
 };
@@ -186,7 +186,7 @@ const   uint16_t PROGMEM CB_CPWD[]  = {LEFTSPC, TD_LNUM,  COMBO_END};
 const   uint16_t PROGMEM CB_SFLK[]  = {TD_LNUM, RGHTSPC,  COMBO_END};
 combo_t key_combos[]                = {
   COMBO(CB_INS,   KC_INS),
-  COMBO(CB_OSMS,  OSM(MOD_LSFT)),
+  // COMBO(CB_OSMS,  OSM(MOD_LSFT)),
   COMBO(CB_CPWD,  CW_TOGG),
   COMBO(CB_SFLK,  SFLK)
 };
@@ -304,7 +304,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case LEFTSPC:
     case RGHTSPC:
       if(record->tap.count && record->event.pressed) {          // Tap
-        register_code(KC_SPC);
+        HRMModEnable ? set_oneshot_mods(MOD_LSFT) : register_code(KC_SPC);
       } else if(record->tap.count && !record->event.pressed) {  // Tap release
         unregister_code(KC_SPC);
       } else if(record->event.pressed) {                        // Hold
