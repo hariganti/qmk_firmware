@@ -5,14 +5,16 @@
 
 // TODO: Enter bug ticket for shifted media keys being out of sequence
 // TODO: Add user function for caps word to work with HRM and SPCL/R
+// TODO: See if tapping term per key can be checked against the row/cols with the HRMs rather than all MTs
+// TODO: Permissive hold and hold-on-key-press per key to refine chord vs roll behavior
 
 // Custom Keys
 enum user_keycodes {
-  SFLK = SAFE_RANGE,  // Shift lock
-  TLCK,               // Tap: GUI + Space | Hold: Control | Release: GUI + L
-  EDEF,               // Tap: GUI + E     | Hold: Reset KB
-  SPCL,               // Left space
-  SPCR                // Right space
+  SFLK = SAFE_RANGE,
+  TLCK,
+  EDEF,
+  SPCL,
+  SPCR
 };
 
 // Layers
@@ -23,23 +25,6 @@ enum layers {
   LAYER_WINDOW,
   LAYER_MEDIA
 };
-
-// Tap Dance Setup
-enum td_keycodes {
-  LNUM // Numpad layer tap dance
-};
-
-typedef enum {
-  // TD_NONE,
-  TD_UNKNOWN,
-  TD_SINGLE_TAP,
-  TD_SINGLE_HOLD,
-  TD_DOUBLE_TAP
-} td_state_t;
-
-td_state_t  getTapDanceState(    tap_dance_state_t *state);
-void        LNUM_TDFinished(tap_dance_state_t *state, void *user_data);
-void        LNUM_TDReset(   tap_dance_state_t *state, void *user_data);
 
 // Keymap
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -59,14 +44,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 
   #define TT_LNAV TT(LAYER_NAVIGATION)
-  #define TT_LNUM TT(LAYER_NUMPAD)    // Replace with tap dance and put zero back here...
-  #define TD_LNUM TD(LNUM)
-  #define MO_LWIN MO(LAYER_WINDOW)
-  #define ESCLMED LT(LAYER_MEDIA, KC_ESC)
-  #define LEFTSPC LT(0,           SPCL)
-  #define RGHTSPC LT(0,           SPCR)
-  #define THTL    LT(0,           TLCK)
-  #define THED    LT(0,           EDEF)
+  #define TT_LNUM TT(LAYER_NUMPAD)
+  #define MO_LWIN LT(LAYER_WINDOW,  KC_PSCR)
+  #define ESCLMED LT(LAYER_MEDIA,   KC_ESC)
+  #define LEFTSPC LT(0,             SPCL)
+  #define RGHTSPC LT(0,             SPCR)
+  #define THTL    LT(0,             TLCK)
+  #define THED    LT(0,             EDEF)
   #define HRAS    LALT_T(KC_S)
   #define HRCD    LCTL_T(KC_D)
   #define HRSF    LSFT_T(KC_F)
@@ -85,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_LSFT,     KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,  KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-     THTL,   THED,   KC_NO,  MO_LWIN,     LEFTSPC,        RGHTSPC,        TD_LNUM,       ESCLMED,   KC_LEFT,KC_DOWN,KC_RGHT
+     THTL,   THED,   KC_NO,  MO_LWIN,     LEFTSPC,        RGHTSPC,        TT_LNUM,       ESCLMED,   KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -97,7 +81,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   #define HRS4    RSFT_T(KC_4)
   #define HRC5    RCTL_T(KC_5)
   #define HRA6    RALT_T(KC_6)
-  #define DOTLMED LT(LAYER_MEDIA, KC_PDOT)
+  #define ZROLNUM LT(LAYER_NUMPAD,  KC_0)
+  #define DOTLMED LT(LAYER_MEDIA,   KC_PDOT)
 
   // Numpad layer - Puts a numpad on the RHS of the keyboard
   //  Needs significant optimization of the relevant symbols' locations
@@ -109,7 +94,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_TRNS,     KC_F3,  KC_F6,  KC_F9,  KC_F12, KC_NO,  KC_0,   KC_1,   KC_2,   KC_3,  KC_SLSH, KC_NO,  KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, SFLK,   KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       DOTLMED,   KC_LEFT,KC_DOWN,KC_RGHT
+    KC_TRNS,KC_TRNS, SFLK,   KC_TRNS,     KC_TRNS,        KC_TRNS,        ZROLNUM,       DOTLMED,   KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -163,9 +148,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
        KC_NO,    KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_MPLY,KC_MPRV,KC_MNXT,   KC_NO,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-         KC_NO,    KC_NO, KC_LALT,KC_LCTL,KC_LSFT,KC_LGUI, KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,      KC_PSCR,
+         KC_NO,    KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,       KC_NO,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_MUTE, MIKM,  KC_VOLU, KC_NO,
+        KC_TRNS,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_MUTE,KC_VOLU, MIKM,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
     KC_TRNS,KC_TRNS, KC_NO,   KC_NO,      KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,    MIKD,  KC_VOLD, MIKU
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
@@ -173,76 +158,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // Custom state variables
-static bool       shiftLock     = false;
-static bool       HRMModEnable  = false;
-static bool       interrupted   = false;
-static bool       interruptable = false;
-static td_state_t tdState;
+static bool shiftLock     = false;
+static bool HRMModEnable  = false;
+static bool interrupted   = false;
+static bool interruptable = false;
 
 // Combos
 const   uint16_t PROGMEM CB_INS[]   = {HRSF,    HRSJ,     COMBO_END};
-const   uint16_t PROGMEM CB_OSMS[]  = {LEFTSPC, RGHTSPC,  COMBO_END};
-const   uint16_t PROGMEM CB_CPWD[]  = {LEFTSPC, TD_LNUM,  COMBO_END};
-const   uint16_t PROGMEM CB_SFLK[]  = {TD_LNUM, RGHTSPC,  COMBO_END};
+const   uint16_t PROGMEM CB_CPWD[]  = {LEFTSPC, TT_LNUM,  COMBO_END};
+const   uint16_t PROGMEM CB_SFLK[]  = {TT_LNUM, RGHTSPC,  COMBO_END};
 combo_t key_combos[]                = {
   COMBO(CB_INS,   KC_INS),
-  // COMBO(CB_OSMS,  OSM(MOD_LSFT)),
   COMBO(CB_CPWD,  CW_TOGG),
   COMBO(CB_SFLK,  SFLK)
-};
-
-// Tap Dance Functions
-td_state_t getTapDanceState(tap_dance_state_t *state) {
-  if(state->count == 1) {
-    return !state->pressed ? TD_SINGLE_TAP : TD_SINGLE_HOLD;
-  } else if(state->count == 2) {
-    return TD_DOUBLE_TAP;
-  }
-
-  return TD_UNKNOWN;
-}
-
-void LNUM_TDFinished(tap_dance_state_t *state, void *user_data) {
-  tdState = getTapDanceState(state);
-  switch(tdState) {
-    case TD_SINGLE_TAP:
-      IS_LAYER_ON(LAYER_NUMPAD) ? register_code(KC_0) : register_code(KC_SPC);
-      break;
-
-    case TD_SINGLE_HOLD:
-      layer_on(LAYER_NUMPAD);
-      break;
-
-    case TD_DOUBLE_TAP:
-      layer_invert(LAYER_NUMPAD);
-      break;
-
-    default:
-      break;
-  }
-
-  return;
-}
-
-void LNUM_TDReset(tap_dance_state_t *state, void *user_data) {
-  switch(tdState) {
-    case TD_SINGLE_TAP:
-      IS_LAYER_ON(LAYER_NUMPAD) ? unregister_code(KC_0) : unregister_code(KC_SPC);
-      break;
-
-    case TD_SINGLE_HOLD:
-      layer_off(LAYER_NUMPAD);
-      break;
-
-     default:
-      break;
-  }
-
-  return;
-}
-
-tap_dance_action_t tap_dance_actions[] = {
-  [LNUM] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, LNUM_TDFinished, LNUM_TDReset)
 };
 
 // Set layer status LED
