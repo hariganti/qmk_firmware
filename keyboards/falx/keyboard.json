@@ -13,7 +13,7 @@
         "extrakey":     true,
         "mousekey":     true,
         "nkro":         true,
-        "tap_dance":    true
+        "tap_dance":    false
     },
     "backlight": {
         "pin":      "GP17",
@@ -26,6 +26,7 @@
     "caps_word": {
         "enabled": true
     },
+    "debounce": 10,
     "matrix_pins": {
         "cols": [
             "GP23",
@@ -45,9 +46,14 @@
         "rows": ["GP6", "GP7", "GP8", "GP9"]
     },
     "processor": "RP2040",
+    "qmk": {
+        "tap_keycode_delay": 10
+    },
     "tapping": {
         "permissive_hold":  true,
-        "term_per_key":     true
+        "term":             175,
+        "term_per_key":     true,
+        "toggle":           2
     },
     "url": "",
     "usb": {
