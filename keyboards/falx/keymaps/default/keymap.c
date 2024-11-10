@@ -4,6 +4,7 @@
 #include QMK_KEYBOARD_H
 
 // TODO: Enter bug ticket for shifted media keys being out of sequence
+// TODO: Add user function for caps word to work with HRM and SPCL/R
 
 // Custom Keys
 enum user_keycodes {
@@ -92,7 +93,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   #define HRCF8   LCTL_T(KC_F8)
   #define HRSF11  LSFT_T(KC_F11)
   #define HRGNO   LGUI_T(KC_NO)
-  #define HRGEQL  RGUI_T(KC_EQL)
+  #define HRGMNS  RGUI_T(KC_MINS)
   #define HRS4    RSFT_T(KC_4)
   #define HRC5    RCTL_T(KC_5)
   #define HRA6    RALT_T(KC_6)
@@ -104,7 +105,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
       KC_TRNS,   KC_F1,  KC_F4,  KC_F7,  KC_F10, KC_NO,  KC_GRV, KC_7,   KC_8,   KC_9,   KC_NO,  KC_NO,  KC_NO,   KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,    KC_F2,  HRAF5,  HRCF8, HRSF11,  HRGNO, HRGEQL,  HRS4,   HRC5,   HRA6,  KC_MINS, KC_NO,       KC_ENT,
+       KC_TRNS,    KC_F2,  HRAF5,  HRCF8, HRSF11,  HRGNO, HRGMNS,  HRS4,   HRC5,   HRA6,  KC_EQL,  KC_NO,       KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_TRNS,     KC_F3,  KC_F6,  KC_F9,  KC_F12, KC_NO,  KC_0,   KC_1,   KC_2,   KC_3,  KC_SLSH, KC_NO,  KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
@@ -271,7 +272,16 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 // Implement custom keycode functions
 
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if(interruptable && record->event.pressed) interrupted = true;
+  switch(keycode) {
+    case THTL:
+      if(record->event.pressed) interruptable = true;
+      break;
+
+    default:
+      if(interruptable && record->event.pressed) interrupted = true;
+      break;
+  }
+
   return true;
 }
 
@@ -309,7 +319,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if(record->tap.count && record->event.pressed) {          // Tap
         tap_code16(G(KC_SPC));
       } else if(record->event.pressed) {                        // Hold
-        interruptable = true;
         register_code(KC_LCTL);
       } else if(!record->tap.count && !record->event.pressed) { // Hold release
         unregister_code(KC_LCTL);
