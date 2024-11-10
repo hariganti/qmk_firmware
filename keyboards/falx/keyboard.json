@@ -7,11 +7,13 @@
     "features": {
         "backlight":    true,
         "bootmagic":    true,
+        "combo":        true,
         "command":      false,
         "console":      false,
         "extrakey":     true,
         "mousekey":     true,
-        "nkro":         true
+        "nkro":         true,
+        "tap_dance":    true
     },
     "backlight": {
         "pin":      "GP17",
@@ -20,6 +22,9 @@
         "default": {
             "on": false
         }
+    },
+    "caps_word": {
+        "enabled": true
     },
     "matrix_pins": {
         "cols": [
@@ -40,6 +45,10 @@
         "rows": ["GP6", "GP7", "GP8", "GP9"]
     },
     "processor": "RP2040",
+    "tapping": {
+        "permissive_hold":  true,
+        "term_per_key":     true
+    },
     "url": "",
     "usb": {
         "device_version": "1.0.0",
