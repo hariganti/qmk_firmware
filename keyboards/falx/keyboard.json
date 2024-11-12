@@ -55,7 +55,7 @@
     },
     "tapping": {
         "permissive_hold":  true,
-        "term":             175,
+        "term":             150,
         "term_per_key":     false,
         "toggle":           2
     },
