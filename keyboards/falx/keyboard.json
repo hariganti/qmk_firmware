@@ -45,6 +45,10 @@
         ],
         "rows": ["GP6", "GP7", "GP8", "GP9"]
     },
+    "oneshot":{
+        "tap_toggle":   3,
+        "timeout":      2000
+    },
     "processor": "RP2040",
     "qmk": {
         "tap_keycode_delay": 10
@@ -52,7 +56,7 @@
     "tapping": {
         "permissive_hold":  true,
         "term":             175,
-        "term_per_key":     true,
+        "term_per_key":     false,
         "toggle":           2
     },
     "url": "",

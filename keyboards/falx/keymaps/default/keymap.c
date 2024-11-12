@@ -4,17 +4,15 @@
 #include QMK_KEYBOARD_H
 
 // TODO: Enter bug ticket for shifted media keys being out of sequence
+// TODO: Add the normal layers for gaming
 // TODO: Add user function for caps word to work with HRM and SPCL/R
-// TODO: See if tapping term per key can be checked against the row/cols with the HRMs rather than all MTs
-// TODO: Permissive hold and hold-on-key-press per key to refine chord vs roll behavior
+//        Consider case modes for this (camelCase, snake_case, kebab-case, CAPS_SNAKE, path/to/file, PDFs/caps word)
 
 // Custom Keys
 enum user_keycodes {
   SFLK = SAFE_RANGE,
   TLCK,
-  EDEF,
-  SPCL,
-  SPCR
+  EDEF
 };
 
 // Layers
@@ -23,7 +21,9 @@ enum layers {
   LAYER_NUMPAD,
   LAYER_NAVIGATION,
   LAYER_WINDOW,
-  LAYER_MEDIA
+  LAYER_MEDIA,
+  LAYER_HRM_LEFT,
+  LAYER_HRM_RIGHT
 };
 
 // Keymap
@@ -45,12 +45,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   #define TT_LNAV TT(LAYER_NAVIGATION)
   #define TT_LNUM TT(LAYER_NUMPAD)
-  #define MO_LWIN LT(LAYER_WINDOW,  KC_PSCR)
-  #define ESCLMED LT(LAYER_MEDIA,   KC_ESC)
-  #define LEFTSPC LT(0,             SPCL)
-  #define RGHTSPC LT(0,             SPCR)
-  #define THTL    LT(0,             TLCK)
-  #define THED    LT(0,             EDEF)
+  #define MO_LWIN LT(LAYER_WINDOW,    KC_PSCR)
+  #define ESCLMED LT(LAYER_MEDIA,     KC_ESC)
+  #define HRMLEFT LT(LAYER_HRM_LEFT,  SFLK)
+  #define HRMRGHT LT(LAYER_HRM_RIGHT, KC_SPC)
+  #define THTL    LT(0,               TLCK)
+  #define THED    LT(0,               EDEF)
   #define HRAS    LALT_T(KC_S)
   #define HRCD    LCTL_T(KC_D)
   #define HRSF    LSFT_T(KC_F)
@@ -69,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_LSFT,     KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,  KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-     THTL,   THED,   KC_NO,  MO_LWIN,     LEFTSPC,        RGHTSPC,        TT_LNUM,       ESCLMED,   KC_LEFT,KC_DOWN,KC_RGHT
+     THTL,   THED,   KC_NO,  MO_LWIN,     HRMLEFT,        HRMRGHT,        TT_LNUM,       ESCLMED,   KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -90,22 +90,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
       KC_TRNS,   KC_F1,  KC_F4,  KC_F7,  KC_F10, KC_NO,  KC_GRV, KC_7,   KC_8,   KC_9,   KC_NO,  KC_NO,  KC_NO,   KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,    KC_F2,  HRAF5,  HRCF8, HRSF11,  HRGNO, HRGMNS,  HRS4,   HRC5,   HRA6,  KC_EQL,  KC_NO,       KC_ENT,
+       KC_TRNS,    KC_F2,  HRAF5,  HRCF8, HRSF11,  HRGNO, HRGMNS,  HRS4,   HRC5,   HRA6,  KC_EQL,  KC_NO,      KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_TRNS,     KC_F3,  KC_F6,  KC_F9,  KC_F12, KC_NO,  KC_0,   KC_1,   KC_2,   KC_3,  KC_SLSH, KC_NO,  KC_UP,  KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, SFLK,   KC_TRNS,     KC_TRNS,        KC_TRNS,        ZROLNUM,       DOTLMED,   KC_LEFT,KC_DOWN,KC_RGHT
+    KC_TRNS,KC_TRNS, KC_NO,  KC_TRNS,     KC_TRNS,        KC_TRNS,        ZROLNUM,       DOTLMED,   KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
   // Navigation layer - Navigation keys near the home row
   [LAYER_NAVIGATION] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_PGUP, KC_UP, KC_PGDN, KC_NO,  KC_NO,  KC_NO,   KC_BSPC,
+      KC_TRNS,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_PGUP, KC_UP, KC_PGDN, KC_NO,  KC_NO,  KC_NO,   KC_TRNS,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,    KC_NO, KC_LALT,KC_LCTL,KC_LSFT,KC_LGUI,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT, KC_END, KC_NO,       KC_ENT,
+       KC_TRNS,    KC_NO, KC_LALT,KC_LCTL,KC_LSFT,KC_LGUI,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT, KC_END, KC_NO,      KC_ENT,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,    C(KC_Z),C(KC_X),C(KC_C),C(KC_V),C(KC_Y), KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_PGUP, KC_DEL,
+        KC_TRNS,    C(KC_Z),C(KC_X),C(KC_C),C(KC_V),C(KC_Y), KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_PGUP,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
     KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,   KC_HOME,KC_PGDN, KC_END
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
@@ -129,11 +129,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //  Caps (1,0) = container back and forth?
   [LAYER_WINDOW] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,   CONPRV, CONNXT, SHRINK,EQLDIST, GROW,   KC_NO, KC_NO,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,    KC_NO,
+      KC_TRNS,  CONPRV, CONNXT, SHRINK, EQLDIST, GROW,   KC_NO, KC_NO,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,    KC_NO,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,    TABPRV, TABNXT, ROTL,   FLOTT,  ROTR,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,       KC_NO,
+       KC_TRNS,   TABPRV, TABNXT,  ROTL,   FLOTT,  ROTR,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,       KC_NO,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     SECPRV, SECNXT,SPLITT, G(KC_A),G(KC_F), KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
+        KC_TRNS,    SECPRV, SECNXT, SPLITT, G(KC_A),G(KC_F), KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
     KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,    KC_NO,  KC_NO,  KC_NO
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
@@ -154,23 +154,58 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
     KC_TRNS,KC_TRNS, KC_NO,   KC_NO,      KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,    MIKD,  KC_VOLD, MIKU
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
+  ),
+
+  #define OSLALT OSM(MOD_LALT)
+  #define OSLCTL OSM(MOD_LCTL)
+  #define OSLSFT OSM(MOD_LSFT)
+  #define OSLGUI OSM(MOD_LGUI)
+
+  // HRM Left layer - LHS Home Row Mods
+  [LAYER_HRM_LEFT] = LAYOUT(
+// ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
+      KC_TRNS,  KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS,
+// ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
+       KC_TRNS,   KC_TRNS, OSLALT, OSLCTL, OSLSFT, OSLGUI,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS,
+// ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
+        KC_TRNS,    KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
+// ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
+    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,   KC_TRNS,KC_TRNS,KC_TRNS
+// ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
+  ),
+
+  #define OSRALT OSM(MOD_RALT)
+  #define OSRCTL OSM(MOD_RCTL)
+  #define OSRSFT OSM(MOD_RSFT)
+  #define OSRGUI OSM(MOD_RGUI)
+
+  // HRM Right layer - RHS Home Row Mods
+  [LAYER_HRM_RIGHT] = LAYOUT(
+// ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
+      KC_TRNS,  KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS,
+// ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
+       KC_TRNS,   KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, OSRGUI, OSRSFT, OSRCTL, OSRALT,KC_TRNS, KC_TRNS,     KC_TRNS,
+// ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
+        KC_TRNS,    KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
+// ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
+    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,   KC_TRNS,KC_TRNS,KC_TRNS
+// ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   )
 };
 
 // Custom state variables
 static bool shiftLock     = false;
-static bool HRMModEnable  = false;
 static bool interrupted   = false;
 static bool interruptable = false;
 
 // Combos
-const   uint16_t PROGMEM CB_INS[]   = {HRSF,    HRSJ,     COMBO_END};
-const   uint16_t PROGMEM CB_CPWD[]  = {LEFTSPC, TT_LNUM,  COMBO_END};
-const   uint16_t PROGMEM CB_SFLK[]  = {TT_LNUM, RGHTSPC,  COMBO_END};
+const   uint16_t PROGMEM CB_INS[]   = {HRSF,  HRSJ, COMBO_END};
+const   uint16_t PROGMEM CB_OLSFT[] = {HRCD,  HRSF, COMBO_END};
+const   uint16_t PROGMEM CB_ORSFT[] = {HRSJ,  HRCK, COMBO_END};
 combo_t key_combos[]                = {
-  COMBO(CB_INS,   KC_INS),
-  COMBO(CB_CPWD,  CW_TOGG),
-  COMBO(CB_SFLK,  SFLK)
+  COMBO(CB_INS,   KC_INS        ),
+  COMBO(CB_OLSFT, OSM(MOD_LSFT) ),
+  COMBO(CB_ORSFT, OSM(MOD_RSFT) )
 };
 
 // Set layer status LED
@@ -184,18 +219,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
-#define MIN_TAPPING_TERM 5
-
 // Define the tapping term
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    case QK_MOD_TAP ... QK_MOD_TAP_MAX:
-      return HRMModEnable ? TAPPING_TERM : MIN_TAPPING_TERM;
-
-    default:
-      return TAPPING_TERM;
-  }
-}
+// uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+//   return TAPPING_TERM;
+// }
 
 // Implement custom keycode functions
 
@@ -216,33 +243,6 @@ bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Process regular keycodes
   switch(keycode) {
-    case QK_MOD_TAP ... QK_MOD_TAP_MAX:
-      // If the key is pressed AND (HRMs are disabled OR a tap is registered)
-      // Works because the timeout reduction changes taps to holds with HRM disabled
-      if((!HRMModEnable || record->tap.count) && record->event.pressed) {
-        register_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
-        return false; // Inhibit the processing of the normal MT hold action
-      } else if(!record->event.pressed) {
-        unregister_code(QK_MOD_TAP_GET_TAP_KEYCODE(keycode));
-        if(shiftLock && QK_MOD_TAP_GET_MODS(keycode) == MOD_LSFT) return false; // Subsequent processing of the MT action would unregister LSFT, so skip it when shift lock is enabled
-      }
-
-      break;
-
-    case LEFTSPC:
-    case RGHTSPC:
-      if(record->tap.count && record->event.pressed) {          // Tap
-        HRMModEnable ? set_oneshot_mods(MOD_LSFT) : register_code(KC_SPC);
-      } else if(record->tap.count && !record->event.pressed) {  // Tap release
-        unregister_code(KC_SPC);
-      } else if(record->event.pressed) {                        // Hold
-        HRMModEnable = true;
-      } else {                                                  // Hold release
-        HRMModEnable = false;
-      }
-
-      return false;
-
     case THTL:
       if(record->tap.count && record->event.pressed) {          // Tap
         tap_code16(G(KC_SPC));
@@ -269,11 +269,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
       return false;
 
-    case SFLK:
-      if(record->event.pressed) shiftLock = !shiftLock; // Only register actions on press
-      if(shiftLock)             register_code(KC_LSFT);
-      else                      unregister_code(KC_LSFT);
-      return false;
+    case HRMLEFT:
+      if(record->tap.count && record->event.pressed) { // Only register actions on press
+        shiftLock = !shiftLock;
+        if(shiftLock) {
+          register_code(KC_LSFT);
+        } else {
+          unregister_code(KC_LSFT);
+        }
+
+        return false;
+      }
+
+      break;
 
     // The following are needed as workarounds due to the timing of the keycodes when sent
     case MIKM:
