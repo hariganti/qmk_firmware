@@ -3,7 +3,11 @@
 
 #include QMK_KEYBOARD_H
 
+// Thoughts: Consider whether combos can be used in place of layers for certain things, like window navigation
+//            Additionally, with HRM, what is the added value of putting actions like GUI + {F, A, /} on a separate layer?
+
 // TODO: Enter bug ticket for shifted media keys being out of sequence
+// TODO: Find a way to get the numpad layer key to also have a useable space, even if that means a tap dance
 // TODO: Add the normal layers for gaming
 // TODO: Add user function for caps word to work with HRM and SPCL/R
 //        Consider case modes for this (camelCase, snake_case, kebab-case, CAPS_SNAKE, path/to/file, PDFs/caps word)
@@ -66,11 +70,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TAB,    KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,   KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,  KC_LBRC,KC_RBRC,  KC_BSPC,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
        TT_LNAV,    KC_A,   HRAS,   HRCD,   HRSF,   HRGG,   HRGH,   HRSJ,   HRCK,   HRAL,  KC_SCLN,KC_QUOT,      KC_ENT,
-//       TT_LNAV,    KC_A,   KC_S,   KC_D,   KC_F,   KC_G,   KC_H,   KC_J,   KC_K,   KC_L,  KC_SCLN,KC_QUOT,      KC_ENT,
+      // layer lock
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_LSFT,     KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,  KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP,  KC_DEL,
+        // SFLK
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
      THTL,   THED,   KC_NO,  MO_LWIN,     HRMLEFT,        HRMRGHT,        TT_LNUM,       ESCLMED,   KC_LEFT,KC_DOWN,KC_RGHT
+     //                      F-Keys        Numpad        Navigation       Symbols
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -200,13 +206,21 @@ static bool interrupted   = false;
 static bool interruptable = false;
 
 // Combos
-const   uint16_t PROGMEM CB_INS[]   = {HRSF,  HRSJ, COMBO_END};
-const   uint16_t PROGMEM CB_OLSFT[] = {HRCD,  HRSF, COMBO_END};
-const   uint16_t PROGMEM CB_ORSFT[] = {HRSJ,  HRCK, COMBO_END};
-combo_t key_combos[]                = {
-  COMBO(CB_INS,   KC_INS        ),
-  COMBO(CB_OLSFT, OSM(MOD_LSFT) ),
-  COMBO(CB_ORSFT, OSM(MOD_RSFT) )
+const   uint16_t PROGMEM CB_INS[]     = {HRSF,  HRSJ, COMBO_END};
+const   uint16_t PROGMEM CB_OLSFT[]   = {HRCD,  HRSF, COMBO_END};
+const   uint16_t PROGMEM CB_ORSFT[]   = {HRSJ,  HRCK, COMBO_END};
+const   uint16_t PROGMEM CB_CONPRV[]  = {KC_W,  KC_E, COMBO_END};
+const   uint16_t PROGMEM CB_CONNXT[]  = {KC_E,  KC_R, COMBO_END};
+const   uint16_t PROGMEM CB_TABPRV[]  = {HRAS,  HRCD, COMBO_END};
+const   uint16_t PROGMEM CB_TABNXT[]  = {HRCD,  HRSF, COMBO_END};
+combo_t key_combos[]                  = {
+  COMBO(CB_INS,     KC_INS        ),
+  COMBO(CB_OLSFT,   OSM(MOD_LSFT) ),
+  COMBO(CB_ORSFT,   OSM(MOD_RSFT) ),
+  COMBO(CB_CONPRV,  CONPRV        ),
+  COMBO(CB_CONNXT,  CONNXT        ),
+  COMBO(CB_TABPRV,  TABPRV        ),
+  COMBO(CB_TABNXT,  TABNXT        )
 };
 
 // Set layer status LED
