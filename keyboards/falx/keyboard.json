@@ -26,6 +26,9 @@
     "caps_word": {
         "enabled": true
     },
+    "combo": {
+        "term": 35
+    },
     "debounce": 10,
     "matrix_pins": {
         "cols": [
@@ -55,7 +58,7 @@
     },
     "tapping": {
         "permissive_hold":  true,
-        "term":             150,
+        "term":             175,
         "term_per_key":     false,
         "toggle":           2
     },
