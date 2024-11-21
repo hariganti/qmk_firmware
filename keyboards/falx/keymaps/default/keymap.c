@@ -3,31 +3,36 @@
 
 #include QMK_KEYBOARD_H
 
-// Thoughts: Consider whether combos can be used in place of layers for certain things, like window navigation
-//            Additionally, with HRM, what is the added value of putting actions like GUI + {F, A, /} on a separate layer?
-
-// TODO: Enter bug ticket for shifted media keys being out of sequence
-// TODO: Find a way to get the numpad layer key to also have a useable space, even if that means a tap dance
+// TODO: Benchmark typing durations/delays to understand chording and comboing timers
+//        Per-key timings and per-key permissive hold to adjust behavior for alt and gui
+// TODO: Mod locks for nav layer
+//        Editing shortcuts need to have locks disabled before use, otherwise with RSFT locked, LCTL + C becomes LCTL + RSFT + C
+//        Consider weak mods
+//        Put nav layer release into layer change function to be more robust to state change vs key release
+// TODO: Layer lock
 // TODO: Add the normal layers for gaming
-// TODO: Add user function for caps word to work with HRM and SPCL/R
-//        Consider case modes for this (camelCase, snake_case, kebab-case, CAPS_SNAKE, path/to/file, PDFs/caps word)
+// TODO: Add user function for caps word to work with HRM and space-fn
 
 // Custom Keys
 enum user_keycodes {
-  SFLK = SAFE_RANGE,
-  TLCK,
-  EDEF
+  LYLK = SAFE_RANGE,
+  LSLK,
+  TERMLOCK,
+  DEFAULT_MODE,
+  HYPHEN_MODE,
+  UNDERSCORE_MODE,
+  SLASH_MODE
 };
 
 // Layers
 enum layers {
   LAYER_DEFAULT,
   LAYER_NUMPAD,
+  LAYER_SYMBOL,
+  LAYER_FUNCTION,
   LAYER_NAVIGATION,
   LAYER_WINDOW,
-  LAYER_MEDIA,
-  LAYER_HRM_LEFT,
-  LAYER_HRM_RIGHT
+  LAYER_MEDIA
 };
 
 // Keymap
@@ -47,14 +52,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * │.'.1.'.│.'.2.'.│.'.3.'.│.'.4.'.│.'.5.'.│.'.6.'.│.'.7.'.│.'.8.'.│.'.9.'.│.'10.'.│.'11.'.│.'12.'.│.'13.'.│.'14.'.│.'15.'.│
  */
 
-  #define TT_LNAV TT(LAYER_NAVIGATION)
-  #define TT_LNUM TT(LAYER_NUMPAD)
-  #define MO_LWIN LT(LAYER_WINDOW,    KC_PSCR)
-  #define ESCLMED LT(LAYER_MEDIA,     KC_ESC)
-  #define HRMLEFT LT(LAYER_HRM_LEFT,  SFLK)
-  #define HRMRGHT LT(LAYER_HRM_RIGHT, KC_SPC)
-  #define THTL    LT(0,               TLCK)
-  #define THED    LT(0,               EDEF)
+//[LAYER_TEMPLATE] = LAYOUT(
+// ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
+//    KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
+// ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
+//     KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS     ,
+// ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
+//      KC_TRNS    ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
+// ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
+//  KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    KC_TRNS    ,   KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS
+// ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
+//)
+
   #define HRAS    LALT_T(KC_S)
   #define HRCD    LCTL_T(KC_D)
   #define HRSF    LSFT_T(KC_F)
@@ -63,86 +72,101 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   #define HRSJ    RSFT_T(KC_J)
   #define HRCK    RCTL_T(KC_K)
   #define HRAL    RALT_T(KC_L)
+  #define NOKLFUN LT(LAYER_FUNCTION,    KC_NO   )
+  #define PRTLWIN LT(LAYER_WINDOW,      KC_PSCR )
+  #define SPCLNUM LT(LAYER_NUMPAD,      KC_SPC  )
+  #define SPCLNAV LT(LAYER_NAVIGATION,  KC_SPC  )
+  #define SPCLSYM LT(0,                 KC_SPC  ) // To be updated with a symbols layer
+  #define APPLMED LT(LAYER_MEDIA,       KC_APP  )
+  #define THTL    LT(0,                 TERMLOCK)
+  #define THED    LT(0,                 KC_ESC  )
 
   // Default layer - Basis for regular typing
   [LAYER_DEFAULT] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TAB,    KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,   KC_Y,   KC_U,   KC_I,   KC_O,   KC_P,  KC_LBRC,KC_RBRC,  KC_BSPC,
+       KC_TAB  ,  KC_Q ,  KC_W ,  KC_E ,  KC_R ,  KC_T ,  KC_Y ,  KC_U ,  KC_I ,  KC_O ,  KC_P ,KC_LBRC,KC_RBRC,  KC_BSPC  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       TT_LNAV,    KC_A,   HRAS,   HRCD,   HRSF,   HRGG,   HRGH,   HRSJ,   HRCK,   HRAL,  KC_SCLN,KC_QUOT,      KC_ENT,
-      // layer lock
+         THED    ,  KC_A ,  HRAS ,  HRCD ,  HRSF ,  HRGG ,  HRGH ,  HRSJ ,  HRCK ,  HRAL ,KC_SCLN,KC_QUOT,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_LSFT,     KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_N,   KC_M,  KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP,  KC_DEL,
-        // SFLK
+          LSLK     ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-     THTL,   THED,   KC_NO,  MO_LWIN,     HRMLEFT,        HRMRGHT,        TT_LNUM,       ESCLMED,   KC_LEFT,KC_DOWN,KC_RGHT
-     //                      F-Keys        Numpad        Navigation       Symbols
+      THTL ,G(KC_E),NOKLFUN, PRTLWIN ,    SPCLNUM    ,    SPCLNAV    ,    SPCLSYM    ,   APPLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
-  #define HRAF5   LALT_T(KC_F5)
-  #define HRCF8   LCTL_T(KC_F8)
-  #define HRSF11  LSFT_T(KC_F11)
-  #define HRGNO   LGUI_T(KC_NO)
-  #define HRGMNS  RGUI_T(KC_MINS)
-  #define HRS4    RSFT_T(KC_4)
-  #define HRC5    RCTL_T(KC_5)
-  #define HRA6    RALT_T(KC_6)
-  #define ZROLNUM LT(LAYER_NUMPAD,  KC_0)
+  #define ZROLSYM LT(0,  KC_0) // To be updated with a symbols layer
   #define DOTLMED LT(LAYER_MEDIA,   KC_PDOT)
 
   // Numpad layer - Puts a numpad on the RHS of the keyboard
-  //  Needs significant optimization of the relevant symbols' locations
   [LAYER_NUMPAD] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,   KC_F1,  KC_F4,  KC_F7,  KC_F10, KC_NO,  KC_GRV, KC_7,   KC_8,   KC_9,   KC_NO,  KC_NO,  KC_NO,   KC_BSPC,
+      KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_NO ,  KC_7 ,  KC_8 ,  KC_9 ,KC_BSPC, KC_NO , KC_NO ,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,    KC_F2,  HRAF5,  HRCF8, HRSF11,  HRGNO, HRGMNS,  HRS4,   HRC5,   HRA6,  KC_EQL,  KC_NO,      KC_ENT,
+       KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_GRV,  KC_4,   KC_5,   KC_6,  KC_EQL, KC_NO ,    KC_ENT       ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     KC_F3,  KC_F6,  KC_F9,  KC_F12, KC_NO,  KC_0,   KC_1,   KC_2,   KC_3,  KC_SLSH, KC_NO,  KC_UP,  KC_DEL,
+        KC_TRNS    ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_NO ,  KC_1 ,  KC_2 ,  KC_3 , KC_DEL, KC_NO , KC_UP ,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, KC_NO,  KC_TRNS,     KC_TRNS,        KC_TRNS,        ZROLNUM,       DOTLMED,   KC_LEFT,KC_DOWN,KC_RGHT
+    KC_TRNS,KC_TRNS, KC_NO,  KC_TRNS,     KC_TRNS,        KC_TRNS,        ZROLSYM,       DOTLMED,   KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
+
+  // Function key layer - F-Keys
+  [LAYER_FUNCTION] = LAYOUT(
+// ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
+      KC_TRNS  , KC_F1 , KC_F4 , KC_F7 , KC_F10,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
+// ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
+       KC_TRNS   , KC_F2 , KC_F5 , KC_F8 , KC_F11,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS     ,
+// ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
+        KC_TRNS    , KC_F3 , KC_F6 , KC_F9 , KC_F12,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
+// ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
+    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    KC_TRNS    ,   KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS
+// ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
+  ),
+
+  #define RGLK RGUI_T(KC_NO)
+  #define RSLK RSFT_T(KC_NO)
+  #define RCLK RCTL_T(KC_NO)
+  #define RALK RALT_T(KC_NO)
 
   // Navigation layer - Navigation keys near the home row
   [LAYER_NAVIGATION] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_PGUP, KC_UP, KC_PGDN, KC_NO,  KC_NO,  KC_NO,   KC_TRNS,
+      KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_NO ,KC_PGUP, KC_UP ,KC_PGDN,KC_BSPC, KC_NO , KC_NO ,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,    KC_NO, KC_LALT,KC_LCTL,KC_LSFT,KC_LGUI,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT, KC_END, KC_NO,      KC_ENT,
+       KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT, KC_END, KC_NO ,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,    C(KC_Z),C(KC_X),C(KC_C),C(KC_V),C(KC_Y), KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_PGUP,KC_TRNS,
+        KC_TRNS    ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  RGLK ,  RSLK ,  RCLK ,  RALK , KC_DEL, KC_NO ,KC_PGUP,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,   KC_HOME,KC_PGDN, KC_END
+    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    KC_TRNS    ,   KC_TRNS   ,KC_HOME,KC_PGDN, KC_END
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
-  #define CONPRV  G(S(KC_TAB))
-  #define CONNXT  G(KC_TAB)
+  #define WKSPPRV G(S(KC_TAB))
+  #define WKSPNXT G(KC_TAB)
   #define TABPRV  C(S(KC_TAB))
   #define TABNXT  C(KC_TAB)
   #define SECPRV  A(S(KC_TAB))
   #define SECNXT  A(KC_TAB)
-  #define ROTL    S(KC_F2)
-  #define FLOTT   S(KC_F1)
-  #define ROTR    S(KC_F3)
-  #define SHRINK  S(KC_F5)
-  #define EQLDIST S(KC_F4)
-  #define GROW    S(KC_F6)
+  #define CONSRNK S(KC_F4)
+  #define CONEQL  S(KC_F5)
+  #define CONGROW S(KC_F6)
+  #define ROTCCW  S(KC_F1)
+  #define CONFLOT S(KC_F2)
+  #define ROTCW   S(KC_F3)
   #define SPLITT  G(KC_SLSH)
+  #define FOCUST  G(KC_A)
+  #define BORDERT G(KC_F)
 
-  // Window Management layer - Growing, shrinking, switching, anything-to-do-with managing windows
-  //  Caps (1,0) = container back and forth?
+  // Window management layer - Move through workspaces and tabs, and adjust simple WM formatting
   [LAYER_WINDOW] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,  CONPRV, CONNXT, SHRINK, EQLDIST, GROW,   KC_NO, KC_NO,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,    KC_NO,
+      KC_TRNS  ,WKSPPRV,WKSPNXT,CONSRNK, CONEQL,CONGROW, KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,   TABPRV, TABNXT,  ROTL,   FLOTT,  ROTR,   KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,       KC_NO,
+       KC_TRNS   , TABPRV, TABNXT, ROTCCW,CONFLOT, ROTCW ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS     ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,    SECPRV, SECNXT, SPLITT, G(KC_A),G(KC_F), KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
+        KC_TRNS    , SECPRV, SECNXT, SPLITT, FOCUST,BORDERT,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,    KC_NO,  KC_NO,  KC_NO
+    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    KC_TRNS    ,   KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -153,77 +177,78 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Media layer - Primarily volume and track actions
   [LAYER_MEDIA] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-       KC_NO,    KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_MPLY,KC_MPRV,KC_MNXT,   KC_NO,
+       KC_NO   , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,KC_MPLY,KC_MPRV,KC_MNXT,   KC_NO   ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-         KC_NO,    KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,       KC_NO,
+        KC_NO    , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,      KC_NO      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,     KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO, KC_MUTE,KC_VOLU, MIKM,
+         KC_NO     , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,KC_MUTE,KC_VOLU,  MIKM ,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, KC_NO,   KC_NO,      KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,    MIKD,  KC_VOLD, MIKU
-// ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
-  ),
-
-  #define OSLALT OSM(MOD_LALT)
-  #define OSLCTL OSM(MOD_LCTL)
-  #define OSLSFT OSM(MOD_LSFT)
-  #define OSLGUI OSM(MOD_LGUI)
-
-  // HRM Left layer - LHS Home Row Mods
-  [LAYER_HRM_LEFT] = LAYOUT(
-// ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,  KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS,
-// ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,   KC_TRNS, OSLALT, OSLCTL, OSLSFT, OSLGUI,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS,
-// ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,    KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
-// ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,   KC_TRNS,KC_TRNS,KC_TRNS
-// ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
-  ),
-
-  #define OSRALT OSM(MOD_RALT)
-  #define OSRCTL OSM(MOD_RCTL)
-  #define OSRSFT OSM(MOD_RSFT)
-  #define OSRGUI OSM(MOD_RGUI)
-
-  // HRM Right layer - RHS Home Row Mods
-  [LAYER_HRM_RIGHT] = LAYOUT(
-// ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS,  KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS,
-// ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS,   KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, OSRGUI, OSRSFT, OSRCTL, OSRALT,KC_TRNS, KC_TRNS,     KC_TRNS,
-// ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS,    KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
-// ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS,     KC_TRNS,        KC_TRNS,        KC_TRNS,       KC_TRNS,   KC_TRNS,KC_TRNS,KC_TRNS
+    KC_TRNS,KC_TRNS, KC_NO ,  KC_NO  ,    KC_TRNS    ,    KC_TRNS    ,    KC_TRNS    ,   KC_TRNS   ,  MIKD ,KC_VOLD,  MIKU
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   )
 };
 
-// Custom state variables
-static bool shiftLock     = false;
-static bool interrupted   = false;
-static bool interruptable = false;
-
 // Combos
-const   uint16_t PROGMEM CB_INS[]     = {HRSF,  HRSJ, COMBO_END};
-const   uint16_t PROGMEM CB_OLSFT[]   = {HRCD,  HRSF, COMBO_END};
-const   uint16_t PROGMEM CB_ORSFT[]   = {HRSJ,  HRCK, COMBO_END};
-const   uint16_t PROGMEM CB_CONPRV[]  = {KC_W,  KC_E, COMBO_END};
-const   uint16_t PROGMEM CB_CONNXT[]  = {KC_E,  KC_R, COMBO_END};
-const   uint16_t PROGMEM CB_TABPRV[]  = {HRAS,  HRCD, COMBO_END};
-const   uint16_t PROGMEM CB_TABNXT[]  = {HRCD,  HRSF, COMBO_END};
-combo_t key_combos[]                  = {
-  COMBO(CB_INS,     KC_INS        ),
-  COMBO(CB_OLSFT,   OSM(MOD_LSFT) ),
-  COMBO(CB_ORSFT,   OSM(MOD_RSFT) ),
-  COMBO(CB_CONPRV,  CONPRV        ),
-  COMBO(CB_CONNXT,  CONNXT        ),
-  COMBO(CB_TABPRV,  TABPRV        ),
-  COMBO(CB_TABNXT,  TABNXT        )
+const uint16_t PROGMEM CB_GH[] = {HRGG,    HRGH,     COMBO_END};
+const uint16_t PROGMEM CB_FJ[] = {HRSF,    HRSJ,     COMBO_END};
+const uint16_t PROGMEM CB_DK[] = {HRCD,    HRCK,     COMBO_END};
+const uint16_t PROGMEM CB_EI[] = {KC_E,    KC_I,     COMBO_END};
+const uint16_t PROGMEM CB_CO[] = {KC_C,    KC_COMM,  COMBO_END};
+const uint16_t PROGMEM CB_SL[] = {HRAS,    HRAL,     COMBO_END};
+
+const uint16_t PROGMEM CB_JK[] = {HRSJ,    HRCK,     COMBO_END};
+const uint16_t PROGMEM CB_HJ[] = {HRGH,    HRSJ,     COMBO_END};
+const uint16_t PROGMEM CB_UI[] = {KC_U,    KC_I,     COMBO_END};
+const uint16_t PROGMEM CB_YU[] = {KC_Y,    KC_U,     COMBO_END};
+const uint16_t PROGMEM CB_MO[] = {KC_M,    KC_COMM,  COMBO_END};
+const uint16_t PROGMEM CB_NM[] = {KC_N,    KC_M,     COMBO_END};
+const uint16_t PROGMEM CB_DF[] = {HRCD,    HRSF,     COMBO_END};
+const uint16_t PROGMEM CB_FG[] = {HRSF,    HRGG,     COMBO_END};
+const uint16_t PROGMEM CB_ER[] = {KC_E,    KC_R,     COMBO_END};
+const uint16_t PROGMEM CB_RT[] = {KC_R,    KC_T,     COMBO_END};
+const uint16_t PROGMEM CB_CV[] = {KC_C,    KC_V,     COMBO_END};
+const uint16_t PROGMEM CB_VB[] = {KC_V,    KC_B,     COMBO_END};
+
+const uint16_t PROGMEM CB_45[] = {KC_4,    KC_5,     COMBO_END};
+const uint16_t PROGMEM CB_56[] = {KC_5,    KC_6,     COMBO_END};
+const uint16_t PROGMEM CB_78[] = {KC_7,    KC_8,     COMBO_END};
+const uint16_t PROGMEM CB_89[] = {KC_8,    KC_9,     COMBO_END};
+
+combo_t key_combos[] = {
+  COMBO(CB_GH, OSM(MOD_LSFT)  ),
+  COMBO(CB_FJ, KC_INS         ),
+  COMBO(CB_DK, DEFAULT_MODE   ),
+  COMBO(CB_EI, HYPHEN_MODE    ),
+  COMBO(CB_CO, UNDERSCORE_MODE),
+  COMBO(CB_SL, SLASH_MODE     ),
+
+  COMBO(CB_JK, KC_DOT ),
+  COMBO(CB_HJ, KC_COMM),
+  COMBO(CB_UI, KC_EXLM),
+  COMBO(CB_YU, KC_QUES),
+  COMBO(CB_MO, KC_SCLN),
+  COMBO(CB_NM, KC_COLN),
+  COMBO(CB_DF, KC_QUOT),
+  COMBO(CB_FG, KC_DQUO),
+  COMBO(CB_ER, KC_MINS),
+  COMBO(CB_RT, KC_UNDS),
+  COMBO(CB_CV, KC_LPRN),
+  COMBO(CB_VB, KC_RPRN),
+
+  COMBO(CB_45, KC_PPLS),
+  COMBO(CB_56, KC_PMNS),
+  COMBO(CB_78, KC_PAST),
+  COMBO(CB_89, KC_PSLS)
 };
 
-// Set layer status LED
+// Custom state variables
+static uint16_t spaceKey  = KC_SPC;
+static bool     lsftLock  = false;
+static bool     rguiLock  = false;
+static bool     rsftLock  = false;
+static bool     rctlLock  = false;
+static bool     raltLock  = false;
+
 layer_state_t layer_state_set_user(layer_state_t state) {
   if(get_highest_layer(state)) {
     backlight_enable();
@@ -234,76 +259,129 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
-// Define the tapping term
-// uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-//   return TAPPING_TERM;
-// }
-
-// Implement custom keycode functions
-
-bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) {
-    case THTL:
-      if(record->event.pressed) interruptable = true;
-      break;
-
-    default:
-      if(interruptable && record->event.pressed) interrupted = true;
-      break;
-  }
-
-  return true;
-}
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Process regular keycodes
   switch(keycode) {
-    case THTL:
-      if(record->tap.count && record->event.pressed) {          // Tap
-        tap_code16(G(KC_SPC));
-      } else if(record->event.pressed) {                        // Hold
-        register_code(KC_LCTL);
-      } else if(!record->tap.count && !record->event.pressed) { // Hold release
-        unregister_code(KC_LCTL);
-        interruptable = false;
-        if(interrupted) {                                       // Chord
-          interrupted = false;
+    case DEFAULT_MODE:
+      if(record->event.pressed) spaceKey = KC_SPC;
+      return false;
+
+    case HYPHEN_MODE:
+      if(record->event.pressed) spaceKey = KC_MINS;
+      return false;
+
+    case UNDERSCORE_MODE:
+      if(record->event.pressed) spaceKey = KC_UNDS;
+      return false;
+
+    case SLASH_MODE:
+      if(record->event.pressed) spaceKey = KC_SLSH;
+      return false;
+
+    case SPCLNUM:
+    case SPCLNAV:
+    case SPCLSYM:
+      if(record->tap.count && record->event.pressed) {
+        tap_code16(spaceKey);
+        return false;
+      }
+
+      break;
+
+    case LSLK:
+      if(record->event.pressed) {
+        lsftLock = !lsftLock;
+        if(lsftLock) {
+          register_code(KC_LSFT);
         } else {
-          tap_code16(G(KC_L));                                  // No chord
+          unregister_code(KC_LSFT);
         }
+      }
+
+      return false;
+
+    case RGLK:
+      if(record->tap.count && record->event.pressed) {
+        rguiLock = !rguiLock;
+        if(rguiLock) {
+          register_code(KC_RGUI);
+        } else {
+          unregister_code(KC_RGUI);
+        }
+      } else if(record->event.pressed) {
+        // tap_code16(C(KC_Z));
+      }
+
+      return false;
+
+    case RSLK:
+      if(record->tap.count && record->event.pressed) {
+        rsftLock = !rsftLock;
+        if(rsftLock) {
+          register_code(KC_RSFT);
+        } else {
+          unregister_code(KC_RSFT);
+        }
+      } else if(record->event.pressed) {
+        // tap_code16(C(KC_C));
+      }
+
+      return false;
+
+    case RCLK:
+      if(record->tap.count && record->event.pressed) {
+        rctlLock = !rctlLock;
+        if(rctlLock) {
+          register_code(KC_RCTL);
+        } else {
+          unregister_code(KC_RCTL);
+        }
+      } else if(record->event.pressed) {
+        // tap_code16(C(KC_X));
+      }
+
+      return false;
+
+    case RALK:
+      if(record->tap.count && record->event.pressed) {
+        raltLock = !raltLock;
+        if(raltLock) {
+          register_code(KC_RALT);
+        } else {
+          unregister_code(KC_RALT);
+        }
+      } else if(record->event.pressed) {
+        // tap_code16(C(KC_V));
+      }
+
+      return false;
+
+    case THTL:
+      if(record->tap.count && record->event.pressed) {
+        tap_code16(G(KC_SPC));
+      } else if(record->event.pressed) {
+        tap_code16(G(KC_L));
       }
 
       return false;
 
     case THED:
       if(record->tap.count && record->event.pressed) {
-        tap_code16(G(KC_E));
+        tap_code(KC_ESC);
       } else if(record->event.pressed) {
         layer_clear();
+        spaceKey = KC_SPC;
       }
 
       return false;
-
-    case HRMLEFT:
-      if(record->tap.count && record->event.pressed) { // Only register actions on press
-        shiftLock = !shiftLock;
-        if(shiftLock) {
-          register_code(KC_LSFT);
-        } else {
-          unregister_code(KC_LSFT);
-        }
-
-        return false;
-      }
-
-      break;
 
     // The following are needed as workarounds due to the timing of the keycodes when sent
     case MIKM:
       if(record->event.pressed) {
         register_code(KC_LSFT);
-      } else {
+        wait_ms(5);
         register_code(KC_MUTE);
+      } else {
         unregister_code(KC_MUTE);
         unregister_code(KC_LSFT);
       }
@@ -312,8 +390,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case MIKU:
       if(record->event.pressed) {
         register_code(KC_LSFT);
-      } else {
+        wait_ms(5);
         register_code(KC_VOLU);
+      } else {
         unregister_code(KC_VOLU);
         unregister_code(KC_LSFT);
       }
@@ -322,8 +401,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case MIKD:
       if(record->event.pressed) {
         register_code(KC_LSFT);
-      } else {
+        wait_ms(5);
         register_code(KC_VOLD);
+      } else {
         unregister_code(KC_VOLD);
         unregister_code(KC_LSFT);
       }
@@ -333,6 +413,36 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-// void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
-//   return;
-// }
+void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
+    case SPCLNAV: // Clean up any leftover locks from nav/editing mode
+      if(!record->tap.count && !record->event.pressed) {
+        if(rguiLock) {
+          rguiLock = !rguiLock;
+          unregister_code(KC_RGUI);
+        }
+
+        if(rsftLock) {
+          rsftLock = !rsftLock;
+          unregister_code(KC_RSFT);
+        }
+
+        if(rctlLock) {
+          rctlLock = !rctlLock;
+          unregister_code(KC_RCTL);
+        }
+
+        if(raltLock) {
+          raltLock = !raltLock;
+          unregister_code(KC_RALT);
+        }
+      }
+
+      break;
+
+    default:
+      break;
+  }
+
+  return;
+}
