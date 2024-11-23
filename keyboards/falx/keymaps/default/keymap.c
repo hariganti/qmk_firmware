@@ -5,18 +5,12 @@
 
 // TODO: Benchmark typing durations/delays to understand chording and comboing timers
 //        Per-key timings and per-key permissive hold to adjust behavior for alt and gui
-// TODO: Mod locks for nav layer
-//        Editing shortcuts need to have locks disabled before use, otherwise with RSFT locked, LCTL + C becomes LCTL + RSFT + C
-//        Consider weak mods
-//        Put nav layer release into layer change function to be more robust to state change vs key release
-// TODO: Layer lock
 // TODO: Add the normal layers for gaming
 // TODO: Add user function for caps word to work with HRM and space-fn
 
 // Custom Keys
 enum user_keycodes {
-  LYLK = SAFE_RANGE,
-  LSLK,
+  LTLK = SAFE_RANGE,
   TERMLOCK,
   DEFAULT_MODE,
   HYPHEN_MODE,
@@ -88,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
          THED    ,  KC_A ,  HRAS ,  HRCD ,  HRSF ,  HRGG ,  HRGH ,  HRSJ ,  HRCK ,  HRAL ,KC_SCLN,KC_QUOT,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-          LSLK     ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
+          LTLK     ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
       THTL ,G(KC_E),NOKLFUN, PRTLWIN ,    SPCLNUM    ,    SPCLNAV    ,    SPCLSYM    ,   APPLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
@@ -102,11 +96,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
       KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_NO ,  KC_7 ,  KC_8 ,  KC_9 ,KC_BSPC, KC_NO , KC_NO ,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_GRV,  KC_4,   KC_5,   KC_6,  KC_EQL, KC_NO ,    KC_ENT       ,
+       KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_GRV,  KC_4 ,  KC_5 ,  KC_6 , KC_EQL, KC_NO ,    KC_ENT       ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_TRNS    ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_NO ,  KC_1 ,  KC_2 ,  KC_3 , KC_DEL, KC_NO , KC_UP ,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, KC_NO,  KC_TRNS,     KC_TRNS,        KC_TRNS,        ZROLSYM,       DOTLMED,   KC_LEFT,KC_DOWN,KC_RGHT
+    KC_TRNS,KC_TRNS, KC_NO , KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    ZROLSYM    ,   DOTLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -123,19 +117,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
-  #define RGLK RGUI_T(KC_NO)
-  #define RSLK RSFT_T(KC_NO)
-  #define RCLK RCTL_T(KC_NO)
-  #define RALK RALT_T(KC_NO)
+  #define LCLREDO RCTL_T(KC_Y)
+  #define RGLUNDO RGUI_T(KC_Z)
+  #define RSLCOPY RSFT_T(KC_C)
+  #define RCLPSTE RCTL_T(KC_V)
+  #define RALCUT  RALT_T(KC_X)
 
   // Navigation layer - Navigation keys near the home row
   [LAYER_NAVIGATION] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_NO ,KC_PGUP, KC_UP ,KC_PGDN,KC_BSPC, KC_NO , KC_NO ,  KC_TRNS  ,
+      KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,LCLREDO,KC_PGUP, KC_UP ,KC_PGDN,KC_BSPC, KC_NO , KC_NO ,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
        KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT, KC_END, KC_NO ,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS    ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  RGLK ,  RSLK ,  RCLK ,  RALK , KC_DEL, KC_NO ,KC_PGUP,KC_TRNS,
+        KC_TRNS    ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,RGLUNDO,RSLCOPY,RCLPSTE, RALCUT, KC_DEL, KC_NO ,KC_PGUP,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
     KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    KC_TRNS    ,   KC_TRNS   ,KC_HOME,KC_PGDN, KC_END
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
@@ -243,25 +238,116 @@ combo_t key_combos[] = {
 
 // Custom state variables
 static uint16_t spaceKey  = KC_SPC;
-static bool     lsftLock  = false;
+static bool     layerLock = false;
 static bool     rguiLock  = false;
 static bool     rsftLock  = false;
 static bool     rctlLock  = false;
 static bool     raltLock  = false;
 
 layer_state_t layer_state_set_user(layer_state_t state) {
+  // Backlight indicator of layer status
   if(get_highest_layer(state)) {
     backlight_enable();
   } else {
     backlight_disable();
+    layerLock = false;
+  }
+
+  // Cleanup of nav/edit mod locks
+  if(!IS_LAYER_ON_STATE(state, LAYER_NAVIGATION)) {
+    if(rguiLock) {
+      rguiLock = !rguiLock;
+      unregister_code(KC_RGUI);
+    }
+
+    if(rsftLock) {
+      rsftLock = !rsftLock;
+      unregister_code(KC_RSFT);
+    }
+
+    if(rctlLock) {
+      rctlLock = !rctlLock;
+      unregister_code(KC_RCTL);
+    }
+
+    if(raltLock) {
+      raltLock = !raltLock;
+      unregister_code(KC_RALT);
+    }
   }
 
   return state;
 }
 
+bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
+    case KC_UP:
+    case KC_DOWN:
+    case KC_LEFT:
+    case KC_RGHT:
+    case KC_HOME:
+    case KC_END:
+    case KC_PGUP:
+    case KC_PGDN:
+      if(rguiLock) add_weak_mods(MOD_BIT(KC_RGUI));
+      if(rsftLock) add_weak_mods(MOD_BIT(KC_RSFT));
+      if(rctlLock) add_weak_mods(MOD_BIT(KC_RCTL));
+      if(raltLock) add_weak_mods(MOD_BIT(KC_RALT));
+      break;
+
+    default:
+      break;
+  }
+
+  return true;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Process regular keycodes
   switch(keycode) {
+    case QK_LAYER_TAP ... QK_LAYER_TAP_MAX:
+      // Handle special cases of LT
+      switch(keycode) {
+        case SPCLNAV:
+          if(record->tap.count && record->event.pressed) {
+            tap_code16(spaceKey);
+            return false;
+          }
+
+          break;
+
+        case THTL:
+          if(record->tap.count && record->event.pressed) {
+            tap_code16(G(KC_SPC));
+          } else if(record->event.pressed) {
+            tap_code16(G(KC_L));
+          }
+
+          return false;
+
+        case THED:
+          if(record->tap.count && record->event.pressed) {
+            tap_code(KC_ESC);
+          } else if(record->event.pressed) {
+            layer_clear();
+            spaceKey  = KC_SPC;
+          }
+
+          return false;
+      }
+
+      // Disable hold action on LT when layer lock is active
+      if(layerLock && !record->tap.count) {
+        layerLock = false; // Essentially works as a one-time disable on the LT keyup
+        return false;
+      }
+
+      break;
+
+    case LTLK:
+      if(record->event.pressed) layerLock = !layerLock;
+      return false;
+
     case DEFAULT_MODE:
       if(record->event.pressed) spaceKey = KC_SPC;
       return false;
@@ -278,99 +364,63 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if(record->event.pressed) spaceKey = KC_SLSH;
       return false;
 
-    case SPCLNUM:
-    case SPCLNAV:
-    case SPCLSYM:
+    case LCLREDO:
       if(record->tap.count && record->event.pressed) {
-        tap_code16(spaceKey);
-        return false;
-      }
-
-      break;
-
-    case LSLK:
-      if(record->event.pressed) {
-        lsftLock = !lsftLock;
-        if(lsftLock) {
-          register_code(KC_LSFT);
-        } else {
-          unregister_code(KC_LSFT);
-        }
+        tap_code16(C(KC_Y));
+      } else if(record->event.pressed) {
+        rguiLock = false;
+        rsftLock = false;
+        rctlLock = false;
+        raltLock = false;
       }
 
       return false;
 
-    case RGLK:
+    case RGLUNDO:
       if(record->tap.count && record->event.pressed) {
+        tap_code16(C(KC_Z));
+      } else if(record->event.pressed) {
         rguiLock = !rguiLock;
-        if(rguiLock) {
-          register_code(KC_RGUI);
-        } else {
-          unregister_code(KC_RGUI);
-        }
-      } else if(record->event.pressed) {
-        // tap_code16(C(KC_Z));
       }
 
       return false;
 
-    case RSLK:
+    case RSLCOPY:
       if(record->tap.count && record->event.pressed) {
+        tap_code16(C(KC_C));
+        tap_code(KC_RGHT);
+        rguiLock = false;
+        rsftLock = false;
+        rctlLock = false;
+        raltLock = false;
+      } else if(record->event.pressed) {
         rsftLock = !rsftLock;
-        if(rsftLock) {
-          register_code(KC_RSFT);
-        } else {
-          unregister_code(KC_RSFT);
-        }
-      } else if(record->event.pressed) {
-        // tap_code16(C(KC_C));
       }
 
       return false;
 
-    case RCLK:
+    case RCLPSTE:
       if(record->tap.count && record->event.pressed) {
+        tap_code16(C(KC_V));
+        rguiLock = false;
+        rsftLock = false;
+        rctlLock = false;
+        raltLock = false;
+      } else if(record->event.pressed) {
         rctlLock = !rctlLock;
-        if(rctlLock) {
-          register_code(KC_RCTL);
-        } else {
-          unregister_code(KC_RCTL);
-        }
-      } else if(record->event.pressed) {
-        // tap_code16(C(KC_X));
       }
 
       return false;
 
-    case RALK:
+    case RALCUT:
       if(record->tap.count && record->event.pressed) {
+        tap_code16(C(KC_X));
+        rguiLock = false;
+        rsftLock = false;
+        rctlLock = false;
+        raltLock = false;
+      } else if(record->event.pressed) {
         raltLock = !raltLock;
-        if(raltLock) {
-          register_code(KC_RALT);
-        } else {
-          unregister_code(KC_RALT);
-        }
-      } else if(record->event.pressed) {
-        // tap_code16(C(KC_V));
-      }
-
-      return false;
-
-    case THTL:
-      if(record->tap.count && record->event.pressed) {
-        tap_code16(G(KC_SPC));
-      } else if(record->event.pressed) {
-        tap_code16(G(KC_L));
-      }
-
-      return false;
-
-    case THED:
-      if(record->tap.count && record->event.pressed) {
-        tap_code(KC_ESC);
-      } else if(record->event.pressed) {
-        layer_clear();
-        spaceKey = KC_SPC;
       }
 
       return false;
@@ -411,38 +461,4 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
   return true;
-}
-
-void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) {
-    case SPCLNAV: // Clean up any leftover locks from nav/editing mode
-      if(!record->tap.count && !record->event.pressed) {
-        if(rguiLock) {
-          rguiLock = !rguiLock;
-          unregister_code(KC_RGUI);
-        }
-
-        if(rsftLock) {
-          rsftLock = !rsftLock;
-          unregister_code(KC_RSFT);
-        }
-
-        if(rctlLock) {
-          rctlLock = !rctlLock;
-          unregister_code(KC_RCTL);
-        }
-
-        if(raltLock) {
-          raltLock = !raltLock;
-          unregister_code(KC_RALT);
-        }
-      }
-
-      break;
-
-    default:
-      break;
-  }
-
-  return;
 }
