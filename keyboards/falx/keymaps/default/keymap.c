@@ -5,12 +5,12 @@
 
 // TODO: Benchmark typing durations/delays to understand chording and comboing timers
 //        Per-key timings and per-key permissive hold to adjust behavior for alt and gui
-// TODO: Add the normal layers for gaming
 // TODO: Add user function for caps word to work with HRM and space-fn
+// TODO: Caps Word on space
 
 // Custom Keys
 enum user_keycodes {
-  LTLK = SAFE_RANGE,
+  LTINHIB = SAFE_RANGE,
   TERMLOCK,
   DEFAULT_MODE,
   HYPHEN_MODE,
@@ -68,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   #define HRSJ    RSFT_T(KC_J)
   #define HRCK    RCTL_T(KC_K)
   #define HRAL    RALT_T(KC_L)
-  #define NOKLFUN LT(LAYER_FUNCTION,    KC_NO   )
+  #define LTILFUN LT(LAYER_FUNCTION,    LTINHIB )
   #define PRTLWIN LT(LAYER_WINDOW,      KC_PSCR )
   #define SPCLNUM LT(LAYER_NUMPAD,      KC_SPC  )
   #define SPCLNAV LT(LAYER_NAVIGATION,  KC_SPC  )
@@ -84,9 +84,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
          THED    ,  KC_A ,  HRAS ,  HRCD ,  HRSF ,  HRGG ,  HRGH ,  HRSJ ,  HRCK ,  HRAL ,KC_SCLN,KC_QUOT,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-          LTLK     ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
+         KC_NO     ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-      THTL ,G(KC_E),NOKLFUN, PRTLWIN ,    SPCLNUM    ,    SPCLNAV    ,    SPCLSYM    ,   APPLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
+      THTL ,G(KC_E),LTILFUN, PRTLWIN ,    SPCLNUM    ,    SPCLNAV    ,    SPCLSYM    ,   APPLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -102,7 +102,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         KC_TRNS    ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, KC_NO ,  KC_1 ,  KC_2 ,  KC_3 , KC_DEL, KC_NO , KC_UP ,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
-    KC_TRNS,KC_TRNS, KC_NO , KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    ZROLSYM    ,   DOTLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
+    KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    ZROLSYM    ,   DOTLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
@@ -119,7 +119,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
   ),
 
-  #define LCLREDO RCTL_T(KC_Y)
+  #define RMRREDO RCTL_T(KC_Y)
   #define RGLUNDO RGUI_T(KC_Z)
   #define RSLCOPY RSFT_T(KC_C)
   #define RCLPSTE RCTL_T(KC_V)
@@ -128,7 +128,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Navigation layer - Navigation keys near the home row
   [LAYER_NAVIGATION] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,LCLREDO,KC_PGUP, KC_UP ,KC_PGDN,KC_BSPC, KC_NO , KC_NO ,  KC_TRNS  ,
+      KC_TRNS  ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,RMRREDO,KC_PGUP, KC_UP ,KC_PGDN,KC_BSPC, KC_NO , KC_NO ,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
        KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT, KC_END, KC_NO ,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
@@ -286,25 +286,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
   // Cleanup of nav/edit mod locks
   if(!IS_LAYER_ON_STATE(state, LAYER_NAVIGATION)) {
-    if(rguiLock) {
-      rguiLock = !rguiLock;
-      unregister_code(KC_RGUI);
-    }
-
-    if(rsftLock) {
-      rsftLock = !rsftLock;
-      unregister_code(KC_RSFT);
-    }
-
-    if(rctlLock) {
-      rctlLock = !rctlLock;
-      unregister_code(KC_RCTL);
-    }
-
-    if(raltLock) {
-      raltLock = !raltLock;
-      unregister_code(KC_RALT);
-    }
+    rguiLock = false;
+    raltLock = false;
+    rsftLock = false;
+    rctlLock = false;
   }
 
   return state;
@@ -339,6 +324,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case QK_LAYER_TAP ... QK_LAYER_TAP_MAX:
       // Handle special cases of LT
       switch(keycode) {
+        case LTILFUN:
+          if(record->tap.count && record->event.pressed) {
+            layerLock = !layerLock;
+            return false;
+          }
+
+          break;
+
         case SPCLNAV:
           if(record->tap.count && record->event.pressed) {
             tap_code16(spaceKey);
@@ -375,10 +368,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
       break;
 
-    case LTLK:
-      if(record->event.pressed) layerLock = !layerLock;
-      return false;
-
     case DEFAULT_MODE:
       if(record->event.pressed) spaceKey = KC_SPC;
       return false;
@@ -395,7 +384,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if(record->event.pressed) spaceKey = KC_SLSH;
       return false;
 
-    case LCLREDO:
+    case RMRREDO:
       if(record->tap.count && record->event.pressed) {
         tap_code16(C(KC_Y));
       } else if(record->event.pressed) {
