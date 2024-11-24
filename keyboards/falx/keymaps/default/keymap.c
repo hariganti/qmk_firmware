@@ -84,7 +84,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
          THED    ,  KC_A ,  HRAS ,  HRCD ,  HRSF ,  HRGG ,  HRGH ,  HRSJ ,  HRCK ,  HRAL ,KC_SCLN,KC_QUOT,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-         KC_NO     ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
+        CW_TOGG    ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
       THTL ,G(KC_E),LTILFUN, PRTLWIN ,    SPCLNUM    ,    SPCLNAV    ,    SPCLSYM    ,   APPLMED   ,KC_LEFT,KC_DOWN,KC_RGHT
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
@@ -241,8 +241,8 @@ const uint16_t PROGMEM CB_78[] = {KC_7,    KC_8,     COMBO_END};
 const uint16_t PROGMEM CB_89[] = {KC_8,    KC_9,     COMBO_END};
 
 combo_t key_combos[] = {
-  COMBO(CB_GH, OSM(MOD_LSFT)  ),
-  COMBO(CB_FJ, KC_INS         ),
+  COMBO(CB_GH, KC_INS         ),
+  COMBO(CB_FJ, OSM(MOD_LSFT)  ),
   COMBO(CB_DK, DEFAULT_MODE   ),
   COMBO(CB_EI, HYPHEN_MODE    ),
   COMBO(CB_CO, UNDERSCORE_MODE),
@@ -295,6 +295,25 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+bool caps_word_press_user(uint16_t keycode) {
+  switch(keycode) {
+    case KC_A ... KC_Z:
+      add_weak_mods(MOD_BIT(KC_LSFT));
+
+    case KC_1 ... KC_0:
+    case KC_BSPC:
+    case KC_DEL:
+    case KC_MINS:
+    case KC_UNDS:
+    case KC_SLSH:
+    case KC_BSLS:
+      return true;
+
+    default:
+      return false;
+  }
+}
+
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
     case KC_UP:
@@ -332,7 +351,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
           break;
 
-        case SPCLNAV:
+        case SPCLNUM:
           if(record->tap.count && record->event.pressed) {
             tap_code16(spaceKey);
             return false;
