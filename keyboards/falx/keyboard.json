@@ -24,7 +24,8 @@
         }
     },
     "caps_word": {
-        "enabled": true
+        "enabled":          true,
+        "invert_on_shift":  true
     },
     "combo": {
         "term": 35
