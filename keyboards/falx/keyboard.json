@@ -58,10 +58,11 @@
         "tap_keycode_delay": 10
     },
     "tapping": {
-        "permissive_hold":  true,
-        "term":             175,
-        "term_per_key":     false,
-        "toggle":           2
+        "hold_on_other_key_press_per_key":  false,
+        "permissive_hold_per_key":          true,
+        "term":                             175,
+        "term_per_key":                     false,
+        "toggle":                           2
     },
     "url": "",
     "usb": {
