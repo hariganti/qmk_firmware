@@ -5,7 +5,7 @@
 
 // TODO: Benchmark typing durations/delays to understand chording and comboing timers
 //        Per-key timings and per-key permissive hold to adjust behavior for alt and gui
-// TODO: Add user function for caps word to work with HRM and space-fn
+// TODO: Add user function for caps word to work with HRMM and space-fn
 // TODO: Caps Word on space
 
 // Custom Keys
@@ -60,19 +60,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
 //)
 
-  #define HRAS    LALT_T(KC_S)
-  #define HRCD    LCTL_T(KC_D)
-  #define HRSF    LSFT_T(KC_F)
-  #define HRGG    LGUI_T(KC_G)
-  #define HRGH    RGUI_T(KC_H)
-  #define HRSJ    RSFT_T(KC_J)
-  #define HRCK    RCTL_T(KC_K)
-  #define HRAL    RALT_T(KC_L)
+  #define HRMAS   LALT_T(KC_S)
+  #define HRMCD   LCTL_T(KC_D)
+  #define HRMSF   LSFT_T(KC_F)
+  #define HRMGG   LGUI_T(KC_G)
+  #define HRMGH   RGUI_T(KC_H)
+  #define HRMSJ   RSFT_T(KC_J)
+  #define HRMCK   RCTL_T(KC_K)
+  #define HRMAL   RALT_T(KC_L)
   #define LTILFUN LT(LAYER_FUNCTION,    LTINHIB )
   #define PRTLWIN LT(LAYER_WINDOW,      KC_PSCR )
-  #define SPCLNUM LT(LAYER_NUMPAD,      KC_SPC  )
-  #define SPCLNAV LT(LAYER_NAVIGATION,  KC_SPC  )
-  #define SPCLSYM LT(0,                 KC_SPC  ) // To be updated with a symbols layer
+  #define SPCLNUM LT(LAYER_NUMPAD,      KC_NO   )
+  #define SPCLNAV LT(LAYER_NAVIGATION,  KC_NO   )
+  #define SPCLSYM LT(0,                 KC_NO   ) // To be updated with a symbols layer
   #define APPLMED LT(LAYER_MEDIA,       KC_APP  )
   #define THTL    LT(0,                 TERMLOCK)
   #define THED    LT(0,                 KC_ESC  )
@@ -82,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
        KC_TAB  ,  KC_Q ,  KC_W ,  KC_E ,  KC_R ,  KC_T ,  KC_Y ,  KC_U ,  KC_I ,  KC_O ,  KC_P ,KC_LBRC,KC_RBRC,  KC_BSPC  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-         THED    ,  KC_A ,  HRAS ,  HRCD ,  HRSF ,  HRGG ,  HRGH ,  HRSJ ,  HRCK ,  HRAL ,KC_SCLN,KC_QUOT,     KC_ENT      ,
+         THED    ,  KC_A , HRMAS , HRMCD , HRMSF , HRMGG , HRMGH , HRMSJ , HRMCK , HRMAL ,KC_SCLN,KC_QUOT,     KC_ENT      ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
         CW_TOGG    ,  KC_Z ,  KC_X ,  KC_C ,  KC_V ,  KC_B ,  KC_N ,  KC_M ,KC_COMM, KC_DOT,KC_SLSH,KC_BSLS, KC_UP , KC_DEL,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
@@ -154,10 +154,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   #define FOCUST  G(KC_A)
   #define BORDERT G(KC_F)
 
-  // Window management layer - Move through workspaces and tabs, and adjust simple WM formatting
+  // Window management layer - Move tHRMough workspaces and tabs, and adjust simple WM formatting
   [LAYER_WINDOW] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS  ,WKSPPRV,WKSPNXT,CONSRNK, CONEQL,CONGROW, KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
+      KC_TRNS  ,WKSPPRV,WKSPNXT,CONSRNK, CONEQL,CONGROW,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
        KC_TRNS   , TABPRV, TABNXT, ROTCCW,CONFLOT, ROTCW ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS     ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
@@ -215,30 +215,30 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // Combos
-const uint16_t PROGMEM CB_GH[] = {HRGG,    HRGH,     COMBO_END};
-const uint16_t PROGMEM CB_FJ[] = {HRSF,    HRSJ,     COMBO_END};
-const uint16_t PROGMEM CB_DK[] = {HRCD,    HRCK,     COMBO_END};
-const uint16_t PROGMEM CB_EI[] = {KC_E,    KC_I,     COMBO_END};
-const uint16_t PROGMEM CB_CO[] = {KC_C,    KC_COMM,  COMBO_END};
-const uint16_t PROGMEM CB_SL[] = {HRAS,    HRAL,     COMBO_END};
+const uint16_t PROGMEM CB_GH[] = {HRMGG,  HRMGH,    COMBO_END};
+const uint16_t PROGMEM CB_FJ[] = {HRMSF,  HRMSJ,    COMBO_END};
+const uint16_t PROGMEM CB_DK[] = {HRMCD,  HRMCK,    COMBO_END};
+const uint16_t PROGMEM CB_EI[] = {KC_E,   KC_I,     COMBO_END};
+const uint16_t PROGMEM CB_CO[] = {KC_C,   KC_COMM,  COMBO_END};
+const uint16_t PROGMEM CB_SL[] = {HRMAS,  HRMAL,    COMBO_END};
 
-const uint16_t PROGMEM CB_JK[] = {HRSJ,    HRCK,     COMBO_END};
-const uint16_t PROGMEM CB_HJ[] = {HRGH,    HRSJ,     COMBO_END};
-const uint16_t PROGMEM CB_UI[] = {KC_U,    KC_I,     COMBO_END};
-const uint16_t PROGMEM CB_YU[] = {KC_Y,    KC_U,     COMBO_END};
-const uint16_t PROGMEM CB_MO[] = {KC_M,    KC_COMM,  COMBO_END};
-const uint16_t PROGMEM CB_NM[] = {KC_N,    KC_M,     COMBO_END};
-const uint16_t PROGMEM CB_DF[] = {HRCD,    HRSF,     COMBO_END};
-const uint16_t PROGMEM CB_FG[] = {HRSF,    HRGG,     COMBO_END};
-const uint16_t PROGMEM CB_ER[] = {KC_E,    KC_R,     COMBO_END};
-const uint16_t PROGMEM CB_RT[] = {KC_R,    KC_T,     COMBO_END};
-const uint16_t PROGMEM CB_CV[] = {KC_C,    KC_V,     COMBO_END};
-const uint16_t PROGMEM CB_VB[] = {KC_V,    KC_B,     COMBO_END};
+const uint16_t PROGMEM CB_JK[] = {HRMSJ,  HRMCK,    COMBO_END};
+const uint16_t PROGMEM CB_HJ[] = {HRMGH,  HRMSJ,    COMBO_END};
+const uint16_t PROGMEM CB_UI[] = {KC_U,   KC_I,     COMBO_END};
+const uint16_t PROGMEM CB_YU[] = {KC_Y,   KC_U,     COMBO_END};
+const uint16_t PROGMEM CB_MO[] = {KC_M,   KC_COMM,  COMBO_END};
+const uint16_t PROGMEM CB_NM[] = {KC_N,   KC_M,     COMBO_END};
+const uint16_t PROGMEM CB_DF[] = {HRMCD,  HRMSF,    COMBO_END};
+const uint16_t PROGMEM CB_FG[] = {HRMSF,  HRMGG,    COMBO_END};
+const uint16_t PROGMEM CB_ER[] = {KC_E,   KC_R,     COMBO_END};
+const uint16_t PROGMEM CB_RT[] = {KC_R,   KC_T,     COMBO_END};
+const uint16_t PROGMEM CB_CV[] = {KC_C,   KC_V,     COMBO_END};
+const uint16_t PROGMEM CB_VB[] = {KC_V,   KC_B,     COMBO_END};
 
-const uint16_t PROGMEM CB_45[] = {KC_4,    KC_5,     COMBO_END};
-const uint16_t PROGMEM CB_56[] = {KC_5,    KC_6,     COMBO_END};
-const uint16_t PROGMEM CB_78[] = {KC_7,    KC_8,     COMBO_END};
-const uint16_t PROGMEM CB_89[] = {KC_8,    KC_9,     COMBO_END};
+const uint16_t PROGMEM CB_45[] = {KC_4,   KC_5,     COMBO_END};
+const uint16_t PROGMEM CB_56[] = {KC_5,   KC_6,     COMBO_END};
+const uint16_t PROGMEM CB_78[] = {KC_7,   KC_8,     COMBO_END};
+const uint16_t PROGMEM CB_89[] = {KC_8,   KC_9,     COMBO_END};
 
 combo_t key_combos[] = {
   COMBO(CB_GH, KC_INS         ),
@@ -295,6 +295,21 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
+    case HRMCD:
+    case HRMCK:
+    case HRMSF:
+    case HRMSJ:
+      return true;
+
+    default:
+      break;
+  }
+
+  return false;
+}
+
 bool caps_word_press_user(uint16_t keycode) {
   switch(keycode) {
     case KC_A ... KC_Z:
@@ -309,9 +324,14 @@ bool caps_word_press_user(uint16_t keycode) {
     case KC_BSLS:
       return true;
 
+    case QK_LAYER_TAP_GET_TAP_KEYCODE(SPCLNUM):
+      if(spaceKey != KC_SPC) return true;
+
     default:
-      return false;
+      break;
   }
+
+  return false;
 }
 
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -352,9 +372,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           break;
 
         case SPCLNUM:
+        case SPCLNAV:
+        case SPCLSYM:
           if(record->tap.count && record->event.pressed) {
-            tap_code16(spaceKey);
-            return false;
+            register_code16(spaceKey);
+          } else if(record->tap.count && !record->event.pressed) {
+            unregister_code16(spaceKey);
           }
 
           break;
@@ -373,7 +396,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code(KC_ESC);
           } else if(record->event.pressed) {
             layer_clear();
-            spaceKey  = KC_SPC;
+            spaceKey = KC_SPC;
           }
 
           return false;
