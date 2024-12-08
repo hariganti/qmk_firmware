@@ -5,10 +5,6 @@
 
 // TODO: Benchmark typing durations/delays to understand chording and comboing timers
 //        Per-key timings and per-key permissive hold to adjust behavior for alt and gui
-// TODO: Tap dance bracket keys for selection
-//        Tap dance for first bracket to set style ((, [, {) and enter opening bracket. Closing bracket is auto selected to match. Tap dance on open resets process
-// TODO: Integrate slash, backslash, and pipe into combo set
-//        Either on TY and BN with shifting for pipe, or with OSM shift as the default for HRMs and FJ remapped as well to avoid shifting
 
 // Custom Keys
 enum user_keycodes {
@@ -223,7 +219,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // Combos
-const uint16_t PROGMEM CB_GH[] = {HRMGG,  HRMGH,    COMBO_END};
 const uint16_t PROGMEM CB_FJ[] = {HRMSF,  HRMSJ,    COMBO_END};
 const uint16_t PROGMEM CB_DK[] = {HRMCD,  HRMCK,    COMBO_END};
 const uint16_t PROGMEM CB_EI[] = {KC_E,   KC_I,     COMBO_END};
@@ -242,6 +237,9 @@ const uint16_t PROGMEM CB_ER[] = {KC_E,   KC_R,     COMBO_END};
 const uint16_t PROGMEM CB_RT[] = {KC_R,   KC_T,     COMBO_END};
 const uint16_t PROGMEM CB_CV[] = {KC_C,   KC_V,     COMBO_END};
 const uint16_t PROGMEM CB_VB[] = {KC_V,   KC_B,     COMBO_END};
+const uint16_t PROGMEM CB_GH[] = {HRMGG,  HRMGH,    COMBO_END};
+const uint16_t PROGMEM CB_TY[] = {KC_T,   KC_Y,     COMBO_END};
+const uint16_t PROGMEM CB_BN[] = {KC_B,   KC_N,     COMBO_END};
 
 const uint16_t PROGMEM CB_12[] = {KC_1,   KC_2,     COMBO_END};
 const uint16_t PROGMEM CB_23[] = {KC_2,   KC_3,     COMBO_END};
@@ -251,8 +249,7 @@ const uint16_t PROGMEM CB_78[] = {KC_7,   KC_8,     COMBO_END};
 const uint16_t PROGMEM CB_89[] = {KC_8,   KC_9,     COMBO_END};
 
 combo_t key_combos[] = {
-  COMBO(CB_GH, KC_INS         ),
-  COMBO(CB_FJ, OSM(MOD_LSFT)  ),
+  COMBO(CB_FJ, KC_INS         ),
   COMBO(CB_DK, DEFAULT_MODE   ),
   COMBO(CB_EI, HYPHEN_MODE    ),
   COMBO(CB_CO, UNDERSCORE_MODE),
@@ -270,6 +267,9 @@ combo_t key_combos[] = {
   COMBO(CB_RT, KC_UNDS        ),
   COMBO(CB_CV, TD(TD_BRACKETS)),
   COMBO(CB_VB, CLOSE_BRACKET  ),
+  COMBO(CB_TY, KC_BSLS        ),
+  COMBO(CB_GH, KC_PIPE        ),
+  COMBO(CB_BN, KC_SLSH        ),
 
   COMBO(CB_12, KC_LPRN),
   COMBO(CB_23, KC_RPRN),
