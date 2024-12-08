@@ -13,7 +13,7 @@
         "extrakey":     true,
         "mousekey":     true,
         "nkro":         true,
-        "tap_dance":    false
+        "tap_dance":    true
     },
     "backlight": {
         "pin":      "GP17",

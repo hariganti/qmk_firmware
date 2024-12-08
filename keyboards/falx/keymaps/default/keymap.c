@@ -5,17 +5,25 @@
 
 // TODO: Benchmark typing durations/delays to understand chording and comboing timers
 //        Per-key timings and per-key permissive hold to adjust behavior for alt and gui
-// TODO: Add user function for caps word to work with HRMM and space-fn
-// TODO: Caps Word on space
+// TODO: Tap dance bracket keys for selection
+//        Tap dance for first bracket to set style ((, [, {) and enter opening bracket. Closing bracket is auto selected to match. Tap dance on open resets process
+// TODO: Integrate slash, backslash, and pipe into combo set
+//        Either on TY and BN with shifting for pipe, or with OSM shift as the default for HRMs and FJ remapped as well to avoid shifting
 
 // Custom Keys
 enum user_keycodes {
   LTINHIB = SAFE_RANGE,
   TERMLOCK,
+  CLOSE_BRACKET,
   DEFAULT_MODE,
   HYPHEN_MODE,
   UNDERSCORE_MODE,
   SLASH_MODE
+};
+
+// Tap Dances
+enum {
+  TD_BRACKETS
 };
 
 // Layers
@@ -235,6 +243,8 @@ const uint16_t PROGMEM CB_RT[] = {KC_R,   KC_T,     COMBO_END};
 const uint16_t PROGMEM CB_CV[] = {KC_C,   KC_V,     COMBO_END};
 const uint16_t PROGMEM CB_VB[] = {KC_V,   KC_B,     COMBO_END};
 
+const uint16_t PROGMEM CB_12[] = {KC_1,   KC_2,     COMBO_END};
+const uint16_t PROGMEM CB_23[] = {KC_2,   KC_3,     COMBO_END};
 const uint16_t PROGMEM CB_45[] = {KC_4,   KC_5,     COMBO_END};
 const uint16_t PROGMEM CB_56[] = {KC_5,   KC_6,     COMBO_END};
 const uint16_t PROGMEM CB_78[] = {KC_7,   KC_8,     COMBO_END};
@@ -248,19 +258,21 @@ combo_t key_combos[] = {
   COMBO(CB_CO, UNDERSCORE_MODE),
   COMBO(CB_SL, SLASH_MODE     ),
 
-  COMBO(CB_JK, KC_DOT ),
-  COMBO(CB_HJ, KC_COMM),
-  COMBO(CB_UI, KC_EXLM),
-  COMBO(CB_YU, KC_QUES),
-  COMBO(CB_MO, KC_SCLN),
-  COMBO(CB_NM, KC_COLN),
-  COMBO(CB_DF, KC_QUOT),
-  COMBO(CB_FG, KC_DQUO),
-  COMBO(CB_ER, KC_MINS),
-  COMBO(CB_RT, KC_UNDS),
-  COMBO(CB_CV, KC_LPRN),
-  COMBO(CB_VB, KC_RPRN),
+  COMBO(CB_JK, KC_DOT         ),
+  COMBO(CB_HJ, KC_COMM        ),
+  COMBO(CB_UI, KC_EXLM        ),
+  COMBO(CB_YU, KC_QUES        ),
+  COMBO(CB_MO, KC_SCLN        ),
+  COMBO(CB_NM, KC_COLN        ),
+  COMBO(CB_DF, KC_QUOT        ),
+  COMBO(CB_FG, KC_DQUO        ),
+  COMBO(CB_ER, KC_MINS        ),
+  COMBO(CB_RT, KC_UNDS        ),
+  COMBO(CB_CV, TD(TD_BRACKETS)),
+  COMBO(CB_VB, CLOSE_BRACKET  ),
 
+  COMBO(CB_12, KC_LPRN),
+  COMBO(CB_23, KC_RPRN),
   COMBO(CB_45, KC_PPLS),
   COMBO(CB_56, KC_PMNS),
   COMBO(CB_78, KC_PAST),
@@ -268,12 +280,40 @@ combo_t key_combos[] = {
 };
 
 // Custom state variables
-static uint16_t spaceKey  = KC_SPC;
-static bool     layerLock = false;
-static bool     rguiLock  = false;
-static bool     rsftLock  = false;
-static bool     rctlLock  = false;
-static bool     raltLock  = false;
+static uint16_t spaceKey      = KC_SPC;
+static uint16_t bracketCount  = 0;
+static bool     layerLock     = false;
+static bool     rguiLock      = false;
+static bool     rsftLock      = false;
+static bool     rctlLock      = false;
+static bool     raltLock      = false;
+
+// Tap Dance
+void set_open_bracket(tap_dance_state_t *state, void *user_data) {
+  bracketCount = state->count;
+  switch(bracketCount) {
+    case 1:
+      tap_code16(KC_LPRN);
+      break;
+
+    case 2:
+      tap_code16(KC_LCBR);
+      break;
+
+    case 3:
+      tap_code16(KC_LBRC);
+      break;
+
+    default:
+      break;
+  }
+
+  return;
+}
+
+tap_dance_action_t tap_dance_actions[] = {
+  [TD_BRACKETS] = ACTION_TAP_DANCE_FN(set_open_bracket)
+};
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   // Backlight indicator of layer status
@@ -485,6 +525,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         raltLock = !raltLock;
       }
 
+      return false;
+
+    case CLOSE_BRACKET:
+      switch(bracketCount) {
+        case 1:
+          tap_code16(KC_RPRN);
+          break;
+
+        case 2:
+          tap_code16(KC_RCBR);
+          break;
+
+        case 3:
+          tap_code16(KC_RBRC);
+          break;
+
+        default:
+          break;
+      }
+
+      bracketCount = 0;
       return false;
 
     // The following are needed as workarounds due to the timing of the keycodes when sent
