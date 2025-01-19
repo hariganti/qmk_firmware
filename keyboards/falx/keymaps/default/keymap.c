@@ -10,7 +10,6 @@
 enum user_keycodes {
   LTINHIB = SAFE_RANGE,
   TERMLOCK,
-  CLOSE_BRACKET,
   DEFAULT_MODE,
   HYPHEN_MODE,
   UNDERSCORE_MODE,
@@ -19,7 +18,8 @@ enum user_keycodes {
 
 // Tap Dances
 enum {
-  TD_BRACKETS
+  TD_BRKTOPEN,
+  TD_BRKTCLOS
 };
 
 // Layers
@@ -265,8 +265,8 @@ combo_t key_combos[] = {
   COMBO(CB_FG, KC_DQUO        ),
   COMBO(CB_ER, KC_MINS        ),
   COMBO(CB_RT, KC_UNDS        ),
-  COMBO(CB_CV, TD(TD_BRACKETS)),
-  COMBO(CB_VB, CLOSE_BRACKET  ),
+  COMBO(CB_CV, TD(TD_BRKTOPEN)),
+  COMBO(CB_VB, TD(TD_BRKTCLOS)),
   COMBO(CB_TY, KC_BSLS        ),
   COMBO(CB_GH, KC_PIPE        ),
   COMBO(CB_BN, KC_SLSH        ),
@@ -280,18 +280,18 @@ combo_t key_combos[] = {
 };
 
 // Custom state variables
-static uint16_t spaceKey      = KC_SPC;
-static uint16_t bracketCount  = 0;
-static bool     layerLock     = false;
-static bool     rguiLock      = false;
-static bool     rsftLock      = false;
-static bool     rctlLock      = false;
-static bool     raltLock      = false;
+static uint16_t spaceKey    = KC_SPC;
+static uint16_t td_brktcnt  = 0;
+static bool     layerLock   = false;
+static bool     rguiLock    = false;
+static bool     rsftLock    = false;
+static bool     rctlLock    = false;
+static bool     raltLock    = false;
 
 // Tap Dance
-void set_open_bracket(tap_dance_state_t *state, void *user_data) {
-  bracketCount = state->count;
-  switch(bracketCount) {
+void td_brktopen_fn(tap_dance_state_t *state, void *user_data) {
+  td_brktcnt = state->count;
+  switch(td_brktcnt) {
     case 1:
       tap_code16(KC_LPRN);
       break;
@@ -311,68 +311,50 @@ void set_open_bracket(tap_dance_state_t *state, void *user_data) {
   return;
 }
 
+void td_brktclos_fn(tap_dance_state_t *state, void *user_data) {
+  switch(state->count) {
+    case 1:
+      // Enter matching bracket if open bracket was entered previously
+      switch(td_brktcnt) {
+        case 0: // Case of no opening bracket
+        case 1:
+          tap_code16(KC_RPRN);
+          break;
+
+        case 2:
+          tap_code16(KC_RCBR);
+          break;
+
+        case 3:
+          tap_code16(KC_RBRC);
+          break;
+
+        default:
+          break;
+      }
+
+      break;
+
+    case 2:
+      tap_code16(KC_RCBR);
+      break;
+
+    case 3:
+      tap_code16(KC_RBRC);
+      break;
+
+    default:
+      break;
+  }
+
+  td_brktcnt = 0;
+  return;
+}
+
 tap_dance_action_t tap_dance_actions[] = {
-  [TD_BRACKETS] = ACTION_TAP_DANCE_FN(set_open_bracket)
+  [TD_BRKTOPEN] = ACTION_TAP_DANCE_FN(td_brktopen_fn),
+  [TD_BRKTCLOS] = ACTION_TAP_DANCE_FN(td_brktclos_fn)
 };
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-  // Backlight indicator of layer status
-  if(get_highest_layer(state)) {
-    backlight_enable();
-  } else {
-    backlight_disable();
-    layerLock = false;
-  }
-
-  // Cleanup of nav/edit mod locks
-  if(!IS_LAYER_ON_STATE(state, LAYER_NAVIGATION)) {
-    rguiLock = false;
-    raltLock = false;
-    rsftLock = false;
-    rctlLock = false;
-  }
-
-  return state;
-}
-
-bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) {
-    case HRMCD:
-    case HRMCK:
-    case HRMSF:
-    case HRMSJ:
-      return true;
-
-    default:
-      break;
-  }
-
-  return false;
-}
-
-bool caps_word_press_user(uint16_t keycode) {
-  switch(keycode) {
-    case KC_A ... KC_Z:
-      add_weak_mods(MOD_BIT(KC_LSFT));
-
-    case KC_1 ... KC_0:
-    case KC_BSPC:
-    case KC_DEL:
-    case KC_MINS:
-    case KC_UNDS:
-    case KC_SLSH:
-    case KC_BSLS:
-      return true;
-
-    case QK_LAYER_TAP_GET_TAP_KEYCODE(SPCLNUM):
-      if(spaceKey != KC_SPC) return true;
-
-    default:
-      break;
-  }
-
-  return false;
-}
 
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
@@ -527,27 +509,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
       return false;
 
-    case CLOSE_BRACKET:
-      switch(bracketCount) {
-        case 1:
-          tap_code16(KC_RPRN);
-          break;
-
-        case 2:
-          tap_code16(KC_RCBR);
-          break;
-
-        case 3:
-          tap_code16(KC_RBRC);
-          break;
-
-        default:
-          break;
-      }
-
-      bracketCount = 0;
-      return false;
-
     // The following are needed as workarounds due to the timing of the keycodes when sent
     case MIKM:
       if(record->event.pressed) {
@@ -584,4 +545,64 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
   return true;
+}
+
+// Behavior Controls
+layer_state_t layer_state_set_user(layer_state_t state) {
+  // Backlight indicator of layer status
+  if(get_highest_layer(state)) {
+    backlight_enable();
+  } else {
+    backlight_disable();
+    layerLock = false;
+  }
+
+  // Cleanup of nav/edit mod locks
+  if(!IS_LAYER_ON_STATE(state, LAYER_NAVIGATION)) {
+    rguiLock = false;
+    raltLock = false;
+    rsftLock = false;
+    rctlLock = false;
+  }
+
+  return state;
+}
+
+bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
+    case HRMCD:
+    case HRMCK:
+    case HRMSF:
+    case HRMSJ:
+      return true;
+
+    default:
+      break;
+  }
+
+  return false;
+}
+
+bool caps_word_press_user(uint16_t keycode) {
+  switch(keycode) {
+    case KC_A ... KC_Z:
+      add_weak_mods(MOD_BIT(KC_LSFT));
+
+    case KC_1 ... KC_0:
+    case KC_BSPC:
+    case KC_DEL:
+    case KC_MINS:
+    case KC_UNDS:
+    case KC_SLSH:
+    case KC_BSLS:
+      return true;
+
+    case QK_LAYER_TAP_GET_TAP_KEYCODE(SPCLNUM):
+      if(spaceKey != KC_SPC) return true;
+
+    default:
+      break;
+  }
+
+  return false;
 }
