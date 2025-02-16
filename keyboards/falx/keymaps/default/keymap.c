@@ -3,8 +3,9 @@
 
 #include QMK_KEYBOARD_H
 
-// TODO: Benchmark typing durations/delays to understand chording and comboing timers
-//        Per-key timings and per-key permissive hold to adjust behavior for alt and gui
+/*******************************************************************************
+ *                          Custom Keys and Keymaps                            *
+ ******************************************************************************/
 
 // Custom Keys
 enum user_keycodes {
@@ -35,7 +36,7 @@ enum layers {
   LAYER_MEDIA
 };
 
-// Keymap
+// Keymaps
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Spacing, positioning, and coordinates of all keys for use in formatting the keymap
  *
@@ -218,7 +219,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
-// Combos
+/*******************************************************************************
+ *                                   Combos                                    *
+ ******************************************************************************/
+
+// Key Definition
 const uint16_t PROGMEM CB_FJ[] = {HRMSF,  HRMSJ,    COMBO_END};
 const uint16_t PROGMEM CB_DK[] = {HRMCD,  HRMCK,    COMBO_END};
 const uint16_t PROGMEM CB_EI[] = {KC_E,   KC_I,     COMBO_END};
@@ -248,6 +253,7 @@ const uint16_t PROGMEM CB_56[] = {KC_5,   KC_6,     COMBO_END};
 const uint16_t PROGMEM CB_78[] = {KC_7,   KC_8,     COMBO_END};
 const uint16_t PROGMEM CB_89[] = {KC_8,   KC_9,     COMBO_END};
 
+// Combo Mapping
 combo_t key_combos[] = {
   COMBO(CB_FJ, KC_INS         ),
   COMBO(CB_DK, DEFAULT_MODE   ),
@@ -278,6 +284,10 @@ combo_t key_combos[] = {
   COMBO(CB_78, KC_PAST),
   COMBO(CB_89, KC_PSLS)
 };
+
+/*******************************************************************************
+ *                         Custom Keycode Processing                           *
+ ******************************************************************************/
 
 // Custom state variables
 static uint16_t spaceKey    = KC_SPC;
@@ -547,7 +557,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-// Behavior Controls
+/*******************************************************************************
+ *                           Behavioral Controls                               *
+ ******************************************************************************/
+
+// Layer State
 layer_state_t layer_state_set_user(layer_state_t state) {
   // Backlight indicator of layer status
   if(get_highest_layer(state)) {
@@ -568,10 +582,37 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+// Tap-Hold Logic
+#define DEFAULT_TAPPING_TERM 175
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
+    case HRMAS:
+    case HRMAL:
+      return 200;
+
+    default:
+      break;
+  }
+
+  return DEFAULT_TAPPING_TERM;
+}
+
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
     case HRMCD:
     case HRMCK:
+      return true;
+
+    default:
+      break;
+  }
+
+  return false;
+}
+
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
     case HRMSF:
     case HRMSJ:
       return true;
@@ -583,6 +624,7 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
   return false;
 }
 
+// Caps Word Logic
 bool caps_word_press_user(uint16_t keycode) {
   switch(keycode) {
     case KC_A ... KC_Z:

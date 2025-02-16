@@ -28,7 +28,7 @@
         "invert_on_shift":  true
     },
     "combo": {
-        "term": 35
+        "term": 30
     },
     "debounce": 10,
     "matrix_pins": {
@@ -58,10 +58,9 @@
         "tap_keycode_delay": 10
     },
     "tapping": {
-        "hold_on_other_key_press_per_key":  false,
+        "hold_on_other_key_press_per_key":  true,
         "permissive_hold_per_key":          true,
-        "term":                             175,
-        "term_per_key":                     false,
+        "term_per_key":                     true,
         "toggle":                           2
     },
     "url": "",
