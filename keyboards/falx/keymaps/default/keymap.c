@@ -3,6 +3,11 @@
 
 #include QMK_KEYBOARD_H
 
+/** TODO
+ *  - Try asymmetric combos due to stagger, so RHS gets shifted rightward
+ *  - See if the hyphen and underscore would be better swapped with quotes
+ */
+
 /*******************************************************************************
  *                          Custom Keys and Keymaps                            *
  ******************************************************************************/
@@ -587,6 +592,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
+    case HRMSF:
+    case HRMSJ:
+      return 150;
+
     case HRMAS:
     case HRMAL:
       return 200;
@@ -601,7 +610,12 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
     case HRMCD:
+    case HRMSF:
     case HRMCK:
+    case HRMSJ:
+    case SPCLNUM:
+    case SPCLNAV:
+    case SPCLSYM:
       return true;
 
     default:
@@ -613,8 +627,11 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
-    case HRMSF:
-    case HRMSJ:
+    case LTILFUN:
+    case PRTLWIN:
+    case ZROLSYM:
+    case APPLMED:
+    case DOTLMED:
       return true;
 
     default:
