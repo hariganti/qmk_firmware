@@ -600,6 +600,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     case HRMAL:
       return 200;
 
+    case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
+      return 250;
+
     default:
       break;
   }
@@ -613,9 +616,7 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     case HRMSF:
     case HRMCK:
     case HRMSJ:
-    case SPCLNUM:
     case SPCLNAV:
-    case SPCLSYM:
       return true;
 
     default:
@@ -632,6 +633,8 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     case ZROLSYM:
     case APPLMED:
     case DOTLMED:
+    case SPCLNUM:
+    case SPCLSYM:
       return true;
 
     default:
