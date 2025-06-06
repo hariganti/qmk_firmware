@@ -2,14 +2,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
+#include "print.h"
 
 /** TODO
  *  - Try asymmetric combos due to stagger, so RHS gets shifted rightward
  *  - See if the hyphen and underscore would be better swapped with quotes
+ *  - See if Flow Tap can still be used to good effect
+ *      Biggest issue is with things like ctrl + delete
+ *      Ideally tapping term would be dynamic, extended while typing and shorter after a break
+ *      Maybe send "0" for Flow Tap, but adjust an internal variable for a dynamic tapping term
  */
 
 /*******************************************************************************
- *                          Custom Keys and Keymaps                            *
+ ***                        Custom Keys and Keymaps                          ***
  ******************************************************************************/
 
 // Custom Keys
@@ -225,7 +230,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 /*******************************************************************************
- *                                   Combos                                    *
+ ***                                 Combos                                  ***
  ******************************************************************************/
 
 // Key Definition
@@ -291,7 +296,7 @@ combo_t key_combos[] = {
 };
 
 /*******************************************************************************
- *                         Custom Keycode Processing                           *
+ ***                       Custom Keycode Processing                         ***
  ******************************************************************************/
 
 // Custom state variables
@@ -371,6 +376,7 @@ tap_dance_action_t tap_dance_actions[] = {
   [TD_BRKTCLOS] = ACTION_TAP_DANCE_FN(td_brktclos_fn)
 };
 
+// Record Processing
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
     case KC_UP:
@@ -592,14 +598,19 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
+    // Shift needs to be quicker to type quickly
     case HRMSF:
     case HRMSJ:
-      return 150;
+      return 125;
 
+    // Alt and GUI both have non-chord use, so they need a moderate timeout
     case HRMAS:
     case HRMAL:
-      return 200;
+    case HRMGG:
+    case HRMGH:
+      return 250;
 
+    // More relaxed timing for successive taps
     case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
       return 250;
 
@@ -612,11 +623,18 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
   switch(keycode) {
-    case HRMCD:
     case HRMSF:
-    case HRMCK:
     case HRMSJ:
+    case HRMCD:
+    case HRMCK:
+    case LTILFUN:
+    case PRTLWIN:
+    case ZROLSYM:
+    case APPLMED:
+    case DOTLMED:
+    case SPCLNUM:
     case SPCLNAV:
+    case SPCLSYM:
       return true;
 
     default:
@@ -626,22 +644,22 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
   return false;
 }
 
-bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
-  switch(keycode) {
-    case LTILFUN:
-    case PRTLWIN:
-    case ZROLSYM:
-    case APPLMED:
-    case DOTLMED:
-    case SPCLNUM:
-    case SPCLSYM:
+// Chordal Hold Logic
+bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
+  switch(tap_hold_keycode) {
+    case HRMCD:
+    case HRMCK:
+    case HRMAS:
+    case HRMAL:
+    case HRMGG:
+    case HRMGH:
       return true;
 
     default:
       break;
   }
 
-  return false;
+  return get_chordal_hold_default(tap_hold_record, other_record);
 }
 
 // Caps Word Logic

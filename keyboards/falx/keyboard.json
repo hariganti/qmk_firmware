@@ -58,9 +58,7 @@
         "tap_keycode_delay": 10
     },
     "tapping": {
-        "hold_on_other_key_press_per_key":  true,
         "permissive_hold_per_key":          true,
-        "flow_tap_term":                    150,
         "term_per_key":                     true,
         "chordal_hold":                     true,
         "toggle":                           2
