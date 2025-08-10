@@ -600,7 +600,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     // Shift needs to be quicker to type quickly
     case HRMSF:
     case HRMSJ:
-      return 125;
+      return 100;
 
     // Alt and GUI both have non-chord use, so they need a moderate timeout
     case HRMGG:
@@ -628,14 +628,25 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
     case HRMSJ:
     case HRMCD:
     case HRMCK:
+      return true;
+
+    default:
+      break;
+  }
+
+  return false;
+}
+
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
     case LTILFUN:
     case PRTLWIN:
     case ZROLSYM:
     case APPLMED:
     case DOTLMED:
-    case SPCLNUM:
-    case SPCLNAV:
-    case SPCLSYM:
+    // case SPCLNUM:
+    // case SPCLNAV:
+    // case SPCLSYM:
       return true;
 
     default:
@@ -646,22 +657,22 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
 }
 
 // Chordal Hold Logic
-bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
-  switch(tap_hold_keycode) {
-    case HRMCD:
-    case HRMCK:
-    case HRMAS:
-    case HRMAL:
-    case HRMGG:
-    case HRMGH:
-      return true;
+// bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
+//   switch(tap_hold_keycode) {
+//     case HRMCD:
+//     case HRMCK:
+//     case HRMAS:
+//     case HRMAL:
+//     case HRMGG:
+//     case HRMGH:
+//       return true;
 
-    default:
-      break;
-  }
+//     default:
+//       break;
+//   }
 
-  return get_chordal_hold_default(tap_hold_record, other_record);
-}
+//   return get_chordal_hold_default(tap_hold_record, other_record);
+// }
 
 // Caps Word Logic
 bool caps_word_press_user(uint16_t keycode) {
