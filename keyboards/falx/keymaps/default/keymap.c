@@ -600,7 +600,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     // Shift needs to be quicker to type quickly
     case HRMSF:
     case HRMSJ:
-      return 100;
+      return 150;
 
     // Alt and GUI both have non-chord use, so they need a moderate timeout
     case HRMGG:
