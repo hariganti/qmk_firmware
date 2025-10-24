@@ -123,11 +123,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Function key layer - F-Keys
   [LAYER_FUNCTION] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
-      KC_TRNS  , KC_F1 , KC_F4 , KC_F7 , KC_F10,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
+      KC_TRNS  , KC_F1 , KC_F2 , KC_F3 , KC_F4 ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
 // ├───────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴───────────┤
-       KC_TRNS   , KC_F2 , KC_F5 , KC_F8 , KC_F11,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS     ,
+       KC_TRNS   , KC_F5 , KC_F6 , KC_F7 , KC_F8 ,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,     KC_TRNS     ,
 // ├─────────────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬─────┴─┬───────┬───────┤
-        KC_TRNS    , KC_F3 , KC_F6 , KC_F9 , KC_F12,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
+        KC_TRNS    , KC_F9 , KC_F10, KC_F11, KC_F12,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
 // ├───────┬───────┼───────┼───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┴─┬─────┴───────┼───────┼───────┼───────┤
     KC_TRNS,KC_TRNS,KC_TRNS, KC_TRNS ,    KC_TRNS    ,    KC_TRNS    ,    KC_TRNS    ,   KC_TRNS   ,KC_TRNS,KC_TRNS,KC_TRNS
 // ├───────┼───────┼───────┼───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┬─┴─────┬───────┼───────┼───────┼───────┤
@@ -168,7 +168,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   #define FOCUST  G(KC_A)
   #define BORDERT G(KC_F)
 
-  // Window management layer - Move tHRMough workspaces and tabs, and adjust simple WM formatting
+  // Window management layer - Move through workspaces and tabs, and adjust simple WM formatting
   [LAYER_WINDOW] = LAYOUT(
 // ├───────┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───┬───┴───────┤
       KC_TRNS  ,WKSPPRV,WKSPNXT,CONSRNK, CONEQL,CONGROW,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,  KC_TRNS  ,
